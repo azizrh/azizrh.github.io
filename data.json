@@ -1,0 +1,108 @@
+{
+    "personal": {
+      "name": "Muhammad Aziz Rahman",
+      "location": "Tangerang selatan, Banten, Indonesia, 15223",
+      "phone": "+62 812 8770 2280",
+      "email": "aziz.mhmmd.r@gmail.com",
+      "workEmail": "marahman@pmintl.net",
+      "linkedin": "www.linkedin.com/in/muhammad-aziz-rahman",
+      "about": "Muhammad Aziz Rahman, a highly motivated and detail-oriented physics undergraduate from University of Indonesia, I have a strong passion for geospatial analysis, machine learning, and computer vision. With my current position as a Data Engineer at PT Aptaworks, I have honed my skills in Python programming, data pipelines, and machine learning. My experience working on data-driven projects (especially in Supply Chain Management) and solid academic background have given me a strong foundation in analytical thinking and problem-solving. Committed to staying up-to-date with the latest advancements in the field, I strive to consistently deliver high-quality work."
+    },
+    "education": {
+      "university": "University of Indonesia",
+      "location": "Depok, Indonesia",
+      "degree": "Bachelor Degree in Physics",
+      "gpa": "3.54/4.00",
+      "period": "Jul 2017 - Aug 2021"
+    },
+    "skills": {
+      "programming_languages": [
+        "Python (Pandas, Airflow, Prefect Dataflow, Numpy, Manim, Regex, Scikit-Learn, Matplotlib, Seaborn, Pytorch, OpenCV, Selenium, BeautifulSoup, Django)",
+        "C# (ASP.NET Framework)",
+        "Rust",
+        "Dart",
+        "JavaScript",
+        "Golang",
+        "Fortran"
+      ],
+      "databases": [
+        "Postgres",
+        "MSSQL Server",
+        "Snowflake"
+      ],
+      "tools": [
+        "AWS (EC2, S3, RDS, Sagemaker, Lambda, Glue, DMS, KMS)",
+        "Azure",
+        "GCP",
+        "Hashicorp Vault",
+        "Google Earth Engine",
+        "Ms. Power BI",
+        "Tableau",
+        "Airflow",
+        "Talend",
+        "KNIME Analytics",
+        "Manim",
+        "LaTeX",
+        "Ms. Office"
+      ],
+      "certifications": [
+        "Azure AI Fundamentals",
+        "Microsoft Security, Compliance, and Identity Fundamentals"
+      ]
+    },
+    "experience": [
+      {
+        "title": "IT Solution Track&Trace",
+        "company": "Philip Morris International",
+        "location": "Jakarta, Indonesia",
+        "period": "May 2023- Now",
+        "description": "Working as dedicated Software Developer and Validation Engineer for Philip Morris International through PT Aptaworks to support the Track & Trace division.",
+        "achievements": [
+          "Built automation infrastructure for exception reporting using Python and Prefect Data Flow for the IT Track&Trace Division",
+          "Improving security and front-end various CRM apps using ASP.NET framework",
+          "Provide vulnerability remediation for every cloud and on-premise instance",
+          "Provide support for the operational and business team to handle daily tasks by creating Python scripts",
+          "Provide support for the operational Track and Trace team to handle tickets for migrating databases using AWS Data Migration Service",
+          "Communicate with stakeholders across Philip Morris International affiliate to develop application documentation related to European Tobacco Products Directive (EUTPD) revision",
+          "Managing and migrating secrets credential of IT Track&Trace Division to Hashicorp Vault",
+          "Configuring and managing AWS cloud computing environment of IT Track&Trace Division"
+        ]
+      },
+      {
+        "title": "Mathematical Animator",
+        "company": "RareSkills.io",
+        "location": "Remote",
+        "period": "April 2024- Now",
+        "description": "Working as part-time mathematical animator creating animation for BlockChain courses using Manim."
+      },
+      {
+        "title": "Data Engineer",
+        "company": "PT Aptaworks",
+        "location": "Jakarta, Indonesia",
+        "period": "Feb 2022- Now",
+        "achievements": [
+          "Constructed an optimization algorithm for the weekly cigarette production using Python and Streamlit",
+          "Developed a data pipeline and generated weekly/daily reports for the Material Readiness Project",
+          "Created a data pipeline and generated weekly dashboard reports for the Inventory Projection Project",
+          "Produced and distributed weekly dashboard reports of the Synchronization Hub PDCA",
+          "Successfully migrated Power BI dataflow from Redshift (AWS) to Snowflake DB",
+          "Created remote sensing application to quantify vegetation greenness from satellite imagery",
+          "Built a face recognition model for an attendance system using OpenCV, PyTorch, and Fast.ai"
+        ]
+      }
+    ],
+    "portfolio_videos": [
+      {
+        "title": "Mathematical Animations with Manim",
+        "filename": "NewTwosComplementDemo.gif",
+        "description": "A showcase of mathematical concept animations created for blockchain education using Manim library.",
+        "technologies": ["Python", "Manim", "Mathematics", "Animation"]
+      },
+      {
+        "title": "Mathematical Animations with Manim",
+        "filename": "ThreeWayInnerProduct.gif",
+        "description": "A showcase of mathematical concept animations created for blockchain education using Manim library.",
+        "technologies": ["Python", "Manim", "Mathematics", "Animation"]
+      }
+    ]
+  }
