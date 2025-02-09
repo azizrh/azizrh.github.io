@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "AlpineJS frontend project",
     "scripts": {
-        "start": "live-server public/",
+        "start": "live-server",
         "build": "echo 'Add your build script here'"
     },
     "dependencies": {
