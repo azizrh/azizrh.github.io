@@ -150,7 +150,7 @@
         <nav class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80">
             <div class="max-w-4xl mx-auto px-6">
                 <div class="flex justify-between items-center h-16">
-                    <a href="./index.html" class="nav-link"><h1 class="text-lg font-medium" x-text="data.personal?.name"></h1></a>
+                    <a href="./index.html" @click.prevent="window.scrollTo({top: 0, behavior: 'smooth'})" class="nav-link"><h1 class="text-lg font-medium" x-text="data.personal?.name"></h1></a>
                     <div class="flex space-x-8">
                         <a href="#about" @click.prevent="$el.blur(); scrollToSection('about')" class="nav-link">About</a>
                         <a href="#experience" @click.prevent="$el.blur(); scrollToSection('experience')" class="nav-link">Experience</a>
