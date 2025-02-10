@@ -103,6 +103,12 @@
         "filename": "ThreeWayInnerProduct.gif",
         "description": "A showcase of mathematical concept animations created for blockchain education using Manim library.",
         "technologies": ["Python", "Manim", "Mathematics", "Animation"]
+      },
+      {
+        "title": "Mathematical Animations with Manim",
+        "filename": "ReserveCurveVisualization.gif",
+        "description": "A showcase of mathematical concept animations created for blockchain education using Manim library.",
+        "technologies": ["Python", "Manim", "Mathematics", "Animation"]
       }
     ]
   }
