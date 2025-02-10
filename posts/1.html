@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post - Muhammad Aziz Rahman</title>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hack-font@3/build/web/hack.css">
+    <style>
+        :root {
+            --main-bg: #2a2a2a;
+            --secondary-bg: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #bfbfbf;
+            --accent: #64ffda;
+            --accent-dim: rgba(100, 255, 218, 0.1);
+        }
+        body {
+            font-family: 'Hack', monospace;
+            scroll-behavior: smooth;
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+        }
+        .nav-link {
+            position: relative;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.2s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        /* Blog post content styles */
+        .blog-content h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .blog-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        .blog-content pre {
+            background: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        .blog-content code {
+            font-family: 'Hack', monospace;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <div x-data="post()" x-init="loadData()" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex justify-between items-center h-16">
+                    <a href="../index.html" class="nav-link"><h1 class="text-lg font-medium" x-text="data.personal?.name"></h1></a>
+                    <div class="flex space-x-8">
+                        <a href="../index.html#about" class="nav-link">About</a>
+                        <a href="../index.html#experience" class="nav-link">Experience</a>
+                        <a href="../index.html#skills" class="nav-link">Skills</a>
+                        <a href="../index.html#blog" class="nav-link">Blog</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-4xl mx-auto px-6 pt-32 pb-16">
+            <!-- Blog Post Header -->
+            <header class="mb-12">
+                <h1 class="text-3xl font-medium mb-4" x-text="currentPost?.title"></h1>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex gap-2">
+                        <template x-for="tag in currentPost?.tags" :key="tag">
+                            <span class="px-2 py-1 text-xs rounded-full bg-accent bg-opacity-10 text-accent" x-text="tag"></span>
+                        </template>
+                    </div>
+                    <span class="text-gray-400" x-text="currentPost?.date"></span>
+                </div>
+            </header>
+
+            <!-- Blog Post Content -->
+            <article class="blog-content" x-html="currentPost?.content">
+            </article>
+
+            <!-- Back to Home -->
+            <div class="mt-12 pt-8 border-t border-gray-800">
+                <a href="../index.html#blog" class="inline-flex items-center text-accent hover:underline">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i>
+                    Back to all posts
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function post() {
+            return {
+                data: {},
+                currentPost: null,
+                async loadData() {
+                    try {
+                        const response = await fetch('../data.json');
+                        this.data = await response.json();
+                        
+                        // Get post ID from filename
+                        const postId = parseInt(window.location.pathname.split('/').pop().replace('.html', ''));
+                        this.currentPost = this.data.blog_posts.find(post => post.id === postId);
+                    } catch (error) {
+                        console.error('Error loading post data:', error);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

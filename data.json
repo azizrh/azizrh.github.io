@@ -110,5 +110,15 @@
         "description": "A showcase of mathematical concept animations created for blockchain education using Manim library.",
         "technologies": ["Python", "Manim", "Mathematics", "Animation"]
       }
+    ],
+    "blog_posts": [
+      {
+        "id": 1,
+        "title": "Under construction",
+        "date": "2024-02-10",
+        "excerpt": "Under construction",
+        "tags": [""],
+        "content": "<h2>Under construction</h2><p>Under construction.</p>"
+      }
     ]
   }
