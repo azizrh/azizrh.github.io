@@ -142,73 +142,24 @@
             background: var(--accent-dim);
             transform: translateX(4px);
         }
-        /* Add smooth scrolling to the entire page */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Prevent content jump when nav hides */
-        body {
-            padding-top: 64px; /* Should match your nav height */
-        }
-
-        /* Optional: Add overscroll behavior for better mobile experience */
-        body {
-            overscroll-behavior-y: contain;
-        }
     </style>
 </head>
 <body>
     <div x-data="portfolio()" x-init="loadData()" class="min-h-screen">
         <!-- Navigation -->
-<!-- Replace the existing nav element with this -->
-<nav 
-    x-data="{ 
-        showNav: true,
-        lastScrollTop: 0,
-        scrollThreshold: 50,
-        init() {
-            window.addEventListener('scroll', () => {
-                // Get current scroll position, accounting for mobile browsers
-                let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                // Only hide nav when we've scrolled past threshold
-                if (currentScrollTop > this.scrollThreshold) {
-                    // Determine scroll direction and distance
-                    if (currentScrollTop > this.lastScrollTop) {
-                        // Scrolling DOWN
-                        this.showNav = false;
-                    } else {
-                        // Scrolling UP
-                        this.showNav = true;
-                    }
-                } else {
-                    // At the top
-                    this.showNav = true;
-                }
-                
-                // Update last scroll position
-                this.lastScrollTop = currentScrollTop;
-            }, { passive: true }); // Add passive flag for better mobile performance
-        }
-    }"
-    class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80 transition-transform duration-300"
-    :class="{ '-translate-y-full': !showNav }"
->
-    <div class="max-w-4xl mx-auto px-6">
-        <div class="flex justify-between items-center h-16">
-            <a href="./index.html" @click.prevent="window.scrollTo({top: 0, behavior: 'smooth'})" class="nav-link">
-                <h1 class="text-lg font-medium" x-text="data.personal?.name"></h1>
-            </a>
-            <div class="flex space-x-8">
-                <a href="#about" @click.prevent="$el.blur(); scrollToSection('about')" class="nav-link">About</a>
-                <a href="#experience" @click.prevent="$el.blur(); scrollToSection('experience')" class="nav-link">Experience</a>
-                <a href="#skills" @click.prevent="$el.blur(); scrollToSection('skills')" class="nav-link">Skills</a>
-                <a href="#blog" @click.prevent="$el.blur(); scrollToSection('blog')" class="nav-link">Blog</a>
+        <nav class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="flex justify-between items-center h-16">
+                    <a href="./index.html" @click.prevent="window.scrollTo({top: 0, behavior: 'smooth'})" class="nav-link"><h1 class="text-lg font-medium" x-text="data.personal?.name"></h1></a>
+                    <div class="flex space-x-8">
+                        <a href="#about" @click.prevent="$el.blur(); scrollToSection('about')" class="nav-link">About</a>
+                        <a href="#experience" @click.prevent="$el.blur(); scrollToSection('experience')" class="nav-link">Experience</a>
+                        <a href="#skills" @click.prevent="$el.blur(); scrollToSection('skills')" class="nav-link">Skills</a>
+                        <a href="#blog" @click.prevent="$el.blur(); scrollToSection('blog')" class="nav-link">Blog</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</nav>
+        </nav>
 
         <!-- Main Content -->
         <main class="max-w-4xl mx-auto px-6 pt-32 pb-16">
