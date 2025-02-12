@@ -142,6 +142,20 @@
             background: var(--accent-dim);
             transform: translateX(4px);
         }
+        /* Add smooth scrolling to the entire page */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Prevent content jump when nav hides */
+        body {
+            padding-top: 64px; /* Should match your nav height */
+        }
+
+        /* Optional: Add overscroll behavior for better mobile experience */
+        body {
+            overscroll-behavior-y: contain;
+        }
     </style>
 </head>
 <body>
@@ -149,37 +163,37 @@
         <!-- Navigation -->
 <!-- Replace the existing nav element with this -->
 <nav 
-    class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80 transition-transform duration-300"
-    :class="{ '-translate-y-full': !showNav }"
     x-data="{ 
         showNav: true,
-        lastScrollPosition: 0,
+        lastScrollTop: 0,
         scrollThreshold: 50,
-        scrollDirection: 'up',
-        handleScroll() {
-            const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // Determine scroll direction
-            if (currentScrollPosition < this.scrollThreshold) {
-                this.showNav = true;
-            } else {
-                if (currentScrollPosition > this.lastScrollPosition) {
-                    // Scrolling down
-                    this.scrollDirection = 'down';
-                    this.showNav = false;
-                } else if (currentScrollPosition < this.lastScrollPosition) {
-                    // Scrolling up
-                    this.scrollDirection = 'up';
+        init() {
+            window.addEventListener('scroll', () => {
+                // Get current scroll position, accounting for mobile browsers
+                let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Only hide nav when we've scrolled past threshold
+                if (currentScrollTop > this.scrollThreshold) {
+                    // Determine scroll direction and distance
+                    if (currentScrollTop > this.lastScrollTop) {
+                        // Scrolling DOWN
+                        this.showNav = false;
+                    } else {
+                        // Scrolling UP
+                        this.showNav = true;
+                    }
+                } else {
+                    // At the top
                     this.showNav = true;
                 }
-                // If current position equals last position (stopped scrolling),
-                // maintain the last scroll direction state
-            }
-            
-            this.lastScrollPosition = currentScrollPosition;
+                
+                // Update last scroll position
+                this.lastScrollTop = currentScrollTop;
+            }, { passive: true }); // Add passive flag for better mobile performance
         }
     }"
-    @scroll.window.throttle.50ms="handleScroll"
+    class="fixed top-0 w-full bg-[#2a2a2a] border-b border-gray-800 z-50 backdrop-blur-sm bg-opacity-80 transition-transform duration-300"
+    :class="{ '-translate-y-full': !showNav }"
 >
     <div class="max-w-4xl mx-auto px-6">
         <div class="flex justify-between items-center h-16">
