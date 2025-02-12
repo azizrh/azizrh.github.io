@@ -197,7 +197,7 @@
     <h2 class="section-title text-xl font-medium mb-8 text-white">Ask About Me</h2>
     <div class="bg-[#333333] bg-opacity-80 rounded-lg p-4 backdrop-blur-sm">
         <!-- Messages Container -->
-        <div class="h-48 overflow-y-auto mb-4 space-y-4" x-ref="messageContainer">
+        <div class="h-64 overflow-y-auto mb-4 space-y-4" x-ref="messageContainer">
             <template x-for="message in messages" :key="message.timestamp">
                 <div :class="message.sender === 'user' ? 'flex justify-end' : 'flex justify-start'">
                     <div :class="{
