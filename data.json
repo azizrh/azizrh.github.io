@@ -58,7 +58,7 @@
         "title": "IT Solution Track & Trace",
         "company": "Philip Morris International",
         "location": "Jakarta, Indonesia • Remote",
-        "period": "Mar 2023 - Present • 2 yrs 4 mos",
+        "period": "Mar 2023 - Present",
         "description": "Delivering comprehensive IT solutions for global supply chain tracking and compliance of Reduced Risk Product with expertise across cloud engineering, data management, development, and cybersecurity ensuring regulatory compliance and operational excellence.",
         "achievements": [
           "Managed Track&Trace AWS services through terraform scripts, implementing infrastructure as code practices to maintain consistent and scalable cloud environments across multiple regions",
@@ -75,7 +75,7 @@
         "title": "Data Engineer",
         "company": "Aptaworks",
         "location": "Jakarta, Indonesia",
-        "period": "Jan 2022 - Present • 3 yrs 6 mos",
+        "period": "Jan 2022 - Present",
         "description": "Crafting IT solution for multi-national companies:",
         "achievements": [
           "Custom algorithm optimizing plant/factory production by implementing combinatorics and discrete mathematics to evaluate manufacturing sequences, maximizing daily output capacity while reducing bottlenecks",
@@ -90,7 +90,7 @@
         "title": "Mathematical Animator",
         "company": "RareSkills",
         "location": "World-wide • Remote",
-        "period": "Apr 2024 - Nov 2024 • 8 mos",
+        "period": "Apr 2024 - Nov 2024",
         "description": "Animating maths behind cryptography to web3 developer:",
         "achievements": [
           "Modular arithmetic",
@@ -104,12 +104,12 @@
         "title": "Assistant Lecturer for Introduction to Solid State Physics",
         "company": "University of Indonesia",
         "location": "Part-time",
-        "period": "Sep 2020 - Jan 2021 • 5 mos"
+        "period": "Sep 2020 - Jan 2021"
       },
       {
         "title": "Laboratory Teaching Assistant at Fundamental Physics Laboratory",
         "company": "University of Indonesia",
-        "period": "Jun 2019 - Nov 2019 • 6 mos"
+        "period": "Jun 2019 - Nov 2019"
       }
     ],
     "portfolio_videos": [
