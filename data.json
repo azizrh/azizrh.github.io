@@ -1,4 +1,3 @@
-
 {
     "personal": {
       "name": "Muhammad Aziz Rahman",
@@ -7,7 +6,7 @@
       "email": "aziz.mhmmd.r@gmail.com",
       "workEmail": "marahman@pmintl.net",
       "linkedin": "www.linkedin.com/in/muhammad-aziz-rahman",
-      "about": "Muhammad Aziz Rahman, a highly motivated and detail-oriented physics undergraduate from University of Indonesia, I have a strong passion for geospatial analysis, machine learning, and computer vision. With my current position as a Data Engineer at PT Aptaworks and IT Solution Track & Trace role at Philip Morris International, I have honed my skills in Python programming, data pipelines, machine learning, and DevSecOps infrastructure management. My experience working on data-driven projects (especially in Supply Chain Management) and solid academic background have given me a strong foundation in analytical thinking and problem-solving. Committed to staying up-to-date with the latest advancements in the field, I strive to consistently deliver high-quality work."
+      "about": "Passionate about leveraging data science, analytics, and computer vision to solve complex business problems. Currently delivering comprehensive IT solutions for global supply chain tracking and compliance. Experienced in data engineering, MLOps, DevOps, cloud engineering, and developing end-to-end automation solutions. Recognized expert in remote sensing, geospatial analytics, and computer vision with proven track record in optimizing manufacturing operations through advanced analytics and machine learning."
     },
     "education": {
       "university": "University of Indonesia",
@@ -56,11 +55,28 @@
     },
     "experience": [
       {
+        "title": "IT Solution Track & Trace",
+        "company": "Philip Morris International",
+        "location": "Jakarta, Indonesia • Remote",
+        "period": "Mar 2023 - Present • 2 yrs 4 mos",
+        "description": "Delivering comprehensive IT solutions for global supply chain tracking and compliance of Reduced Risk Product with expertise across cloud engineering, data management, development, and cybersecurity ensuring regulatory compliance and operational excellence.",
+        "achievements": [
+          "Managed Track&Trace AWS services through terraform scripts, implementing infrastructure as code practices to maintain consistent and scalable cloud environments across multiple regions",
+          "Collaborated with stakeholders across PMI affiliates to develop comprehensive documentation for track and trace systems validation ensuring compliance with European Tobacco Products Directive (EUTPD) revision requirements",
+          "Implemented CDC using AWS DMS to synchronize and distribute essential production data across all PMI affiliates globally, serving as blueprint for manufacturing operations",
+          "Planned and executed MSSQL database migration from on-premises to Amazon RDS by assessing instance types, calculating cost projections for management approval, performing backup/restore operations, and configuring SSIS integration to address critical vulnerabilities while enhancing scalability, availability, and security",
+          "Conducted vulnerability remediation to enhance system security by resolving critical security issues detected by security teams, while acting as DevSecOps infrastructure administrator deploying .NET applications",
+          "Implemented secret management migration to dedicated secret manager solutions, enhancing security posture by centralizing credential management",
+          "Developed automation pipeline for product traceability reporting using Prefect Data Flow, improving operational monitoring and stakeholder communication through automated email reporting",
+          "Developed solutions from data engineering & automation pipelines to front-end interfaces, enhancing existing end-to-end systems that streamline business processes"
+        ]
+      },
+      {
         "title": "Data Engineer",
         "company": "Aptaworks",
         "location": "Jakarta, Indonesia",
-        "period": "Jan 2022 - Present",
-        "description": "Crafting IT solution for multi-national companies with expertise in data engineering, machine learning, and supply chain optimization.",
+        "period": "Jan 2022 - Present • 3 yrs 6 mos",
+        "description": "Crafting IT solution for multi-national companies:",
         "achievements": [
           "Custom algorithm optimizing plant/factory production by implementing combinatorics and discrete mathematics to evaluate manufacturing sequences, maximizing daily output capacity while reducing bottlenecks",
           "Researched and developed GEOINT solutions utilizing remote sensing, Dijkstra's algorithm, and isochrone mapping by strategically combining geodata with scraped information to generate critical business insights and optimize decision-making processes",
@@ -71,28 +87,29 @@
         ]
       },
       {
-        "title": "IT Solution Track & Trace",
-        "company": "Philip Morris International",
-        "location": "Jakarta, Indonesia",
-        "period": "Mar 2023 - Present",
-        "description": "Delivering comprehensive IT solutions for global supply chain tracking and compliance.",
+        "title": "Mathematical Animator",
+        "company": "RareSkills",
+        "location": "World-wide • Remote",
+        "period": "Apr 2024 - Nov 2024 • 8 mos",
+        "description": "Animating maths behind cryptography to web3 developer:",
         "achievements": [
-          "Reduced risk product (RRP) traceability with expertise across cloud engineering, data management, development, and cybersecurity ensuring regulatory compliance and operational excellence",
-          "Managed Track&Trace AWS services through terraform scripts, implementing infrastructure as code practices to maintain consistent and scalable cloud environments across multiple regions",
-          "Conducted vulnerability remediation to enhance system security by resolving critical security issues detected by security teams, while acting as DevSecOps infrastructure administrator deploying .NET applications and managing MSSQL databases on Amazon RDS with SSIS integration",
-          "Migrated production databases from on-premises to cloud environments, orchestrating seamless transitions while maintaining zero-downtime operations and data integrity",
-          "Implemented secret management migration to dedicated secret manager solutions, enhancing security posture by centralizing credential management and automated rotation policies",
-          "Administered Azure Active Directory for enterprise access management and single sign-on (SSO) solutions to secure application access while maintaining compliance with corporate security policies",
-          "Implemented CDC to synchronize and distribute essential production data across all PMI affiliates globally, serving as blueprint for manufacturing operations",
-          "Developed solutions from data engineering & automation pipelines to front-end interfaces, creating end-to-end systems that streamline business processes"
+          "Modular arithmetic",
+          "Abstract algebra",
+          "Linear algebra",
+          "Group and Field Theory",
+          "Elliptic Curve Cryptography (ECC)"
         ]
       },
       {
-        "title": "Mathematical Animator",
-        "company": "RareSkills",
-        "location": "World-wide",
-        "period": "Apr 2024 - Nov 2024",
-        "description": "Animating maths behind cryptography to web3 developer using Manim library for educational content creation."
+        "title": "Assistant Lecturer for Introduction to Solid State Physics",
+        "company": "University of Indonesia",
+        "location": "Part-time",
+        "period": "Sep 2020 - Jan 2021 • 5 mos"
+      },
+      {
+        "title": "Laboratory Teaching Assistant at Fundamental Physics Laboratory",
+        "company": "University of Indonesia",
+        "period": "Jun 2019 - Nov 2019 • 6 mos"
       }
     ],
     "portfolio_videos": [
