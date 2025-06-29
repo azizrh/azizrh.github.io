@@ -101,15 +101,18 @@
         ]
       },
       {
-        "title": "Assistant Lecturer for Introduction to Solid State Physics",
+        "title": "Assistant Lecturer",
         "company": "University of Indonesia",
-        "location": "Part-time",
-        "period": "Sep 2020 - Jan 2021"
+        "location": "Depok, Indonesia",
+        "period": "Sep 2020 - Jan 2021",
+        "description":"Introduction to Solid State Physics"
       },
       {
-        "title": "Laboratory Teaching Assistant at Fundamental Physics Laboratory",
+        "title": "Laboratory Teaching Assistant",
         "company": "University of Indonesia",
-        "period": "Jun 2019 - Nov 2019"
+        "location": "Depok, Indonesia",
+        "period": "Jun 2019 - Nov 2019",
+        "description":"Fundamental Physics Laboratory."
       }
     ],
     "portfolio_videos": [
