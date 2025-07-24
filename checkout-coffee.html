@@ -260,7 +260,50 @@
             transform: none;
         }
 
-        .delivery-info {
+        .order-options {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .option-section {
+            margin-bottom: 1rem;
+        }
+
+        .option-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .option-label {
+            display: block;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .option-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+            font-size: 1rem;
+            color: #495057;
+            transition: border-color 0.2s ease;
+        }
+
+        .option-select:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1);
+        }
+
+        .option-select:invalid {
+            border-color: #dc3545;
+        }
             background: #f8f9fa;
             border-radius: 8px;
             padding: 1.5rem;
@@ -548,13 +591,31 @@
                     </div>
                 </div>
                 
+                <div class="order-options">
+                    <div class="option-section">
+                        <label class="option-label">Pickup/Delivery Location</label>
+                        <select id="locationSelect" class="option-select" onchange="updateDateOptions()">
+                            <option value="">Select location...</option>
+                            <option value="bintaro">Bintaro (Everyday)</option>
+                            <option value="kemayoran">Kemayoran (Weekdays)</option>
+                            <option value="kembangan">Kembangan (Weekdays)</option>
+                            <option value="blok-m">Blok M (Weekend)</option>
+                        </select>
+                    </div>
+
+                    <div class="option-section">
+                        <label class="option-label">Preferred Date</label>
+                        <input type="date" id="dateSelect" class="option-select" min="" onchange="validateSelection()">
+                    </div>
+                </div>
+
                 <button class="checkout-btn" id="checkoutBtn" onclick="sendToWhatsApp()" disabled>
                     <span>💬</span>
                     Order via WhatsApp
                 </button>
 
                 <div class="delivery-info">
-                    <div class="delivery-title">Delivery Areas</div>
+                    <div class="delivery-title">Available Locations</div>
                     <div class="delivery-locations">
                         <div class="delivery-item">
                             <span class="delivery-location">Bintaro</span>
@@ -597,7 +658,77 @@
             'chocolate-200': { name: 'Chocolate Butterscotch', size: '200ml', price: 23000 }
         };
 
+        const locationSchedules = {
+            'bintaro': { name: 'Bintaro', days: [0, 1, 2, 3, 4, 5, 6] }, // Everyday
+            'kemayoran': { name: 'Kemayoran', days: [1, 2, 3, 4, 5] }, // Weekdays
+            'kembangan': { name: 'Kembangan', days: [1, 2, 3, 4, 5] }, // Weekdays
+            'blok-m': { name: 'Blok M', days: [0, 6] } // Weekend
+        };
+
         let cart = {};
+
+        function updateDateOptions() {
+            const locationSelect = document.getElementById('locationSelect');
+            const dateSelect = document.getElementById('dateSelect');
+            
+            if (!locationSelect.value) {
+                dateSelect.disabled = true;
+                dateSelect.value = '';
+                validateSelection();
+                return;
+            }
+            
+            dateSelect.disabled = false;
+            
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dateSelect.min = tomorrow.toISOString().split('T')[0];
+            
+            // Set maximum date to 30 days from now
+            const maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() + 30);
+            dateSelect.max = maxDate.toISOString().split('T')[0];
+            
+            validateSelection();
+        }
+
+        function validateSelection() {
+            const locationSelect = document.getElementById('locationSelect');
+            const dateSelect = document.getElementById('dateSelect');
+            
+            if (!locationSelect.value || !dateSelect.value) {
+                updateCheckoutButton();
+                return;
+            }
+            
+            const selectedLocation = locationSelect.value;
+            const selectedDate = new Date(dateSelect.value);
+            const dayOfWeek = selectedDate.getDay();
+            
+            const schedule = locationSchedules[selectedLocation];
+            if (!schedule.days.includes(dayOfWeek)) {
+                dateSelect.setCustomValidity('This location is not available on the selected date');
+                dateSelect.reportValidity();
+            } else {
+                dateSelect.setCustomValidity('');
+            }
+            
+            updateCheckoutButton();
+        }
+
+        function updateCheckoutButton() {
+            const locationSelect = document.getElementById('locationSelect');
+            const dateSelect = document.getElementById('dateSelect');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            const hasItems = Object.keys(cart).length > 0;
+            const hasLocation = locationSelect.value !== '';
+            const hasDate = dateSelect.value !== '';
+            const isDateValid = dateSelect.checkValidity();
+            
+            checkoutBtn.disabled = !(hasItems && hasLocation && hasDate && isDateValid);
+        }
 
         function changeQuantity(itemId, change) {
             if (!cart[itemId]) {
@@ -666,14 +797,26 @@
             document.getElementById('totalAmount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
             
             // Update checkout button
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.disabled = total === 0;
+            updateCheckoutButton();
         }
 
         function sendToWhatsApp() {
-            if (Object.keys(cart).length === 0) return;
+            const locationSelect = document.getElementById('locationSelect');
+            const dateSelect = document.getElementById('dateSelect');
+            
+            if (Object.keys(cart).length === 0 || !locationSelect.value || !dateSelect.value) return;
+            
+            const selectedLocation = locationSchedules[locationSelect.value].name;
+            const selectedDate = new Date(dateSelect.value);
+            const formattedDate = selectedDate.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
             
             let message = "Halo! Saya ingin memesan:\n\n";
+            message += "📋 *DETAIL PESANAN:*\n";
             
             let total = 0;
             Object.keys(cart).forEach(itemId => {
@@ -685,15 +828,20 @@
                 message += `• ${quantity}x ${item.name} (${item.size}) - Rp ${subtotal.toLocaleString('id-ID')}\n`;
             });
             
-            message += `\n*Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
+            message += `\n💰 *Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
+            message += `📍 *Lokasi:* ${selectedLocation}\n`;
+            message += `📅 *Tanggal:* ${formattedDate}\n\n`;
             message += "Terima kasih!";
             
             const whatsappUrl = `https://wa.me/6281287702280?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }
 
-        // Initialize display
-        updateDisplay();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            updateDateOptions();
+        });
     </script>
 </body>
 </html>
