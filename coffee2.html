@@ -127,9 +127,9 @@
       <h2>Pickup / Delivery</h2>
 
       <!-- REQUIRED NAME -->
-      <label class="mini" for="custName">Your Name</label>
+      <label class="mini" for="custName">Your Name <span style="color:red">*</span></label>
       <input id="custName" type="text" x-model="customerName" required
-             placeholder="Enter your name"
+             placeholder="Enter your name (required)"
              x-ref="name"
              style="width:100%;padding:.6rem;border:1px solid #ced4da;border-radius:8px"/>
       <div style="height:.5rem"></div>
@@ -270,18 +270,14 @@ function tkc(){
     },
 
     whatsapp(){
-      // Optional: nudge browser to show name field validity if empty
+      // Nudge browser validation for empty name
       if(!this.customerName || !this.customerName.trim()){
         this.$refs.name.reportValidity?.();
         return;
       }
 
       let msg = "Halo! ";
-      if(this.customerName){
-        msg += `Saya ${this.customerName.trim()} ingin memesan:\n\n📋 *DETAIL PESANAN:*\n`;
-      } else {
-        msg += "Saya ingin memesan:\n\n📋 *DETAIL PESANAN:*\n";
-      }
+      msg += `Saya ${this.customerName.trim()} ingin memesan:\n\n📋 *DETAIL PESANAN:*\n`;
 
       this.cartList().forEach(e=>{
         const opt = `Sugar: ${e.sugar}${e.blend?` • Blend: ${e.blend}`:''}`;
