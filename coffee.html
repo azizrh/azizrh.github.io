@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tanjung Kitchen Coffee - Order</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8f9fa;min-height:100vh;line-height:1.6}
+    .header{background:#fff;border-bottom:1px solid #e9ecef;padding:1rem 0;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+    .header-content{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;align-items:center}
+    .logo{font-size:1.5rem;font-weight:700;color:#8B4513}
+    .container{max-width:1200px;margin:2rem auto;padding:0 1rem;display:grid;grid-template-columns:1fr 400px;gap:2rem}
+    .menu-section{background:#fff;border-radius:12px;padding:2rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+    .menu-title{font-size:2rem;font-weight:700;color:#212529;margin-bottom:2rem;text-align:center}
+    .size-section{margin-bottom:3rem}
+    .size-title{font-size:1.25rem;font-weight:600;color:#495057;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #e9ecef}
+    .menu-items{display:flex;flex-direction:column;gap:1rem}
+    .menu-item{display:flex;justify-content:space-between;align-items:center;padding:1.25rem;border:1px solid #e9ecef;border-radius:8px;transition:all .2s ease;background:#fff}
+    .menu-item:hover{border-color:#8B4513;box-shadow:0 2px 8px rgba(139,69,19,.1)}
+    .item-info{flex:1;min-width:0}
+    .item-name{font-size:1.05rem;font-weight:600;color:#212529;margin-bottom:.25rem}
+    .item-price{font-size:1.1rem;font-weight:700;color:#8B4513}
+    .inline-options{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:.5rem;margin-top:.5rem}
+    .inline-options.only-one{grid-template-columns:1fr}
+    .mini-label{font-size:.75rem;font-weight:600;color:#495057}
+    .mini-select{width:100%;padding:.5rem;border:1px solid #ced4da;border-radius:6px;background:#fff;font-size:.9rem;color:#495057}
+    .mini-select:focus{outline:none;border-color:#8B4513;box-shadow:0 0 0 2px rgba(139,69,19,.12)}
+    .quantity-controls{display:flex;align-items:center;gap:1rem;margin-left:1rem}
+    .quantity-btn{width:36px;height:36px;border:1px solid #dee2e6;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:600;transition:all .2s ease}
+    .quantity-btn:hover:not(:disabled){background:#f8f9fa;border-color:#8B4513}
+    .quantity-btn:disabled{opacity:.5;cursor:not-allowed}
+    .quantity-display{min-width:3rem;text-align:center;font-size:1.05rem;font-weight:600;color:#212529}
+    .cart-section{position:sticky;top:2rem;height:fit-content}
+    .cart{background:#fff;border-radius:12px;padding:2rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+    .cart-title{font-size:1.5rem;font-weight:700;color:#212529;margin-bottom:1.5rem;text-align:center}
+    .cart-empty{text-align:center;color:#6c757d;font-style:italic;padding:2rem 0}
+    .cart-items{margin-bottom:1.5rem}
+    .cart-item{display:flex;justify-content:space-between;align-items:flex-start;padding:1rem 0;border-bottom:1px solid #f1f3f4}
+    .cart-item:last-child{border-bottom:none}
+    .cart-item-name{font-weight:600;color:#212529;margin-bottom:.25rem}
+    .cart-item-details{color:#6c757d;font-size:.9rem}
+    .cart-item-price{font-weight:600;color:#8B4513}
+    .cart-total{border-top:2px solid #e9ecef;padding-top:1rem;margin-bottom:2rem}
+    .total-row{display:flex;justify-content:space-between;align-items:center;font-size:1.25rem;font-weight:700;color:#212529}
+    .checkout-btn{width:100%;padding:1rem;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:.5rem}
+    .checkout-btn:hover:not(:disabled){background:#20b954;transform:translateY(-1px)}
+    .checkout-btn:disabled{background:#6c757d;cursor:not-allowed;transform:none}
+    .order-options{margin-bottom:2rem;padding:1.5rem;background:#f8f9fa;border-radius:8px;border:1px solid #e9ecef}
+    .option-section{margin-bottom:1rem}
+    .option-section:last-child{margin-bottom:0}
+    .option-label{display:block;font-weight:600;color:#212529;margin-bottom:.5rem;font-size:.9rem}
+    .option-select{width:100%;padding:.75rem;border:1px solid #ced4da;border-radius:6px;background:#fff;font-size:1rem;color:#495057;transition:border-color .2s ease}
+    .option-select:focus{outline:none;border-color:#8B4513;box-shadow:0 0 0 2px rgba(139,69,19,.1)}
+    .delivery-title{font-weight:600;color:#212529;margin-bottom:1rem}
+    .delivery-locations{display:grid;gap:.5rem}
+    .delivery-item{display:flex;justify-content:space-between;font-size:.9rem}
+    .delivery-location{font-weight:500;color:#495057}
+    .delivery-schedule{color:#6c757d}
+    @media (max-width:768px){
+      .container{grid-template-columns:1fr;gap:1rem;margin:1rem auto}
+      .cart-section{position:static}
+      .menu-section,.cart{padding:1.5rem}
+      .menu-item{flex-direction:column;align-items:stretch;gap:.75rem}
+      .quantity-controls{align-self:flex-end;margin-left:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">Tanjung Kitchen Coffee</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="menu-section">
+      <h1 class="menu-title">Coffee Menu</h1>
+
+      <!-- 1000ML -->
+      <div class="size-section">
+        <h2 class="size-title">Large (1000ml)</h2>
+        <div class="menu-items">
+          <!-- Spanish Latte -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Spanish Latte</div>
+              <div class="item-price">Rp 70.000</div>
+              <div class="inline-options" id="opts-spanish-1000">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('spanish-1000',-1)">−</button>
+              <span class="quantity-display" id="spanish-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('spanish-1000',1)">+</button>
+            </div>
+          </div>
+
+          <!-- Butterscotch Latte -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Butterscotch Latte</div>
+              <div class="item-price">Rp 80.000</div>
+              <div class="inline-options" id="opts-butterscotch-1000">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-1000',-1)">−</button>
+              <span class="quantity-display" id="butterscotch-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-1000',1)">+</button>
+            </div>
+          </div>
+
+          <!-- Caramel Latte -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Caramel Latte</div>
+              <div class="item-price">Rp 80.000</div>
+              <div class="inline-options" id="opts-caramel-1000">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('caramel-1000',-1)">−</button>
+              <span class="quantity-display" id="caramel-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('caramel-1000',1)">+</button>
+            </div>
+          </div>
+
+          <!-- Vanilla Latte -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Vanilla Latte</div>
+              <div class="item-price">Rp 80.000</div>
+              <div class="inline-options" id="opts-vanilla-1000">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-1000',-1)">−</button>
+              <span class="quantity-display" id="vanilla-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-1000',1)">+</button>
+            </div>
+          </div>
+
+          <!-- Palm Sugar Latte -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Palm Sugar Latte</div>
+              <div class="item-price">Rp 80.000</div>
+              <div class="inline-options" id="opts-palm-latte-1000">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-1000',-1)">−</button>
+              <span class="quantity-display" id="palm-latte-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-1000',1)">+</button>
+            </div>
+          </div>
+
+          <!-- Chocolate Butterscotch (non-latte) -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Chocolate Butterscotch</div>
+              <div class="item-price">Rp 80.000</div>
+              <div class="inline-options only-one" id="opts-chocolate-1000">
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-1000',-1)">−</button>
+              <span class="quantity-display" id="chocolate-1000-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-1000',1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 500ML -->
+      <div class="size-section">
+        <h2 class="size-title">Medium (500ml)</h2>
+        <div class="menu-items">
+          <!-- Repeat pattern -->
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Spanish Latte</div>
+              <div class="item-price">Rp 35.000</div>
+              <div class="inline-options" id="opts-spanish-500">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('spanish-500',-1)">−</button>
+              <span class="quantity-display" id="spanish-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('spanish-500',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Butterscotch Latte</div>
+              <div class="item-price">Rp 40.000</div>
+              <div class="inline-options" id="opts-butterscotch-500">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-500',-1)">−</button>
+              <span class="quantity-display" id="butterscotch-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-500',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Caramel Latte</div>
+              <div class="item-price">Rp 40.000</div>
+              <div class="inline-options" id="opts-caramel-500">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('caramel-500',-1)">−</button>
+              <span class="quantity-display" id="caramel-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('caramel-500',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Vanilla Latte</div>
+              <div class="item-price">Rp 40.000</div>
+              <div class="inline-options" id="opts-vanilla-500">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-500',-1)">−</button>
+              <span class="quantity-display" id="vanilla-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-500',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Palm Sugar Latte</div>
+              <div class="item-price">Rp 40.000</div>
+              <div class="inline-options" id="opts-palm-latte-500">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-500',-1)">−</button>
+              <span class="quantity-display" id="palm-latte-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-500',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Chocolate Butterscotch</div>
+              <div class="item-price">Rp 40.000</div>
+              <div class="inline-options only-one" id="opts-chocolate-500">
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-500',-1)">−</button>
+              <span class="quantity-display" id="chocolate-500-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-500',1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 200ML -->
+      <div class="size-section">
+        <h2 class="size-title">Small (200ml)</h2>
+        <div class="menu-items">
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Spanish Latte</div>
+              <div class="item-price">Rp 18.000</div>
+              <div class="inline-options" id="opts-spanish-200">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('spanish-200',-1)">−</button>
+              <span class="quantity-display" id="spanish-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('spanish-200',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Butterscotch Latte</div>
+              <div class="item-price">Rp 23.000</div>
+              <div class="inline-options" id="opts-butterscotch-200">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-200',-1)">−</button>
+              <span class="quantity-display" id="butterscotch-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('butterscotch-200',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Caramel Latte</div>
+              <div class="item-price">Rp 23.000</div>
+              <div class="inline-options" id="opts-caramel-200">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('caramel-200',-1)">−</button>
+              <span class="quantity-display" id="caramel-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('caramel-200',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Vanilla Latte</div>
+              <div class="item-price">Rp 23.000</div>
+              <div class="inline-options" id="opts-vanilla-200">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-200',-1)">−</button>
+              <span class="quantity-display" id="vanilla-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('vanilla-200',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Palm Sugar Latte</div>
+              <div class="item-price">Rp 23.000</div>
+              <div class="inline-options" id="opts-palm-latte-200">
+                <div>
+                  <div class="mini-label">Coffee Blend</div>
+                  <select class="mini-select" data-opt="blend">
+                    <option value="Signature" selected>Signature</option>
+                    <option value="Toekoe">Toekoe</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-200',-1)">−</button>
+              <span class="quantity-display" id="palm-latte-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('palm-latte-200',1)">+</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="item-info">
+              <div class="item-name">Chocolate Butterscotch</div>
+              <div class="item-price">Rp 23.000</div>
+              <div class="inline-options only-one" id="opts-chocolate-200">
+                <div>
+                  <div class="mini-label">Sugar Level</div>
+                  <select class="mini-select" data-opt="sugar">
+                    <option value="Normal" selected>Normal</option>
+                    <option value="Less">Less</option>
+                    <option value="Half">Half</option>
+                    <option value="No Sugar">No Sugar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-200',-1)">−</button>
+              <span class="quantity-display" id="chocolate-200-qty">0</span>
+              <button class="quantity-btn" onclick="changeQuantity('chocolate-200',1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-section">
+      <div class="cart">
+        <h2 class="cart-title">Your Order</h2>
+        <div id="cartEmpty" class="cart-empty">Your cart is empty</div>
+        <div id="cartItems" class="cart-items" style="display:none;"></div>
+        <div id="cartTotal" class="cart-total" style="display:none;">
+          <div class="total-row">
+            <span>Total</span><span id="totalAmount">Rp 0</span>
+          </div>
+        </div>
+
+        <div class="order-options">
+          <div class="option-section">
+            <label class="option-label">Pickup/Delivery Location</label>
+            <select id="locationSelect" class="option-select" onchange="updateDateOptions()">
+              <option value="">Select location...</option>
+              <option value="bintaro">Bintaro (Everyday)</option>
+              <option value="kemayoran">Kemayoran (Weekdays)</option>
+              <option value="kembangan">Kembangan (Weekdays)</option>
+              <option value="blok-m">Blok M (Weekend)</option>
+            </select>
+          </div>
+          <div class="option-section">
+            <label class="option-label">Preferred Date</label>
+            <input type="date" id="dateSelect" class="option-select" min="" onchange="validateSelection()"/>
+          </div>
+        </div>
+
+        <button class="checkout-btn" id="checkoutBtn" onclick="sendToWhatsApp()" disabled>
+          <span>💬</span> Order via WhatsApp
+        </button>
+
+        <div class="delivery-info" style="background:#f8f9fa;border-radius:8px;padding:1.5rem;margin-top:2rem;">
+          <div class="delivery-title">Available Locations</div>
+          <div class="delivery-locations">
+            <div class="delivery-item"><span class="delivery-location">Bintaro</span><span class="delivery-schedule">Everyday</span></div>
+            <div class="delivery-item"><span class="delivery-location">Kemayoran</span><span class="delivery-schedule">Weekdays</span></div>
+            <div class="delivery-item"><span class="delivery-location">Kembangan</span><span class="delivery-schedule">Weekdays</span></div>
+            <div class="delivery-item"><span class="delivery-location">Blok M</span><span class="delivery-schedule">Weekend</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Base menu items (no options here)
+    const menuItems = {
+      'spanish-1000': { name:'Spanish Latte', size:'1000ml', price:70000 },
+      'butterscotch-1000': { name:'Butterscotch Latte', size:'1000ml', price:80000 },
+      'caramel-1000': { name:'Caramel Latte', size:'1000ml', price:80000 },
+      'vanilla-1000': { name:'Vanilla Latte', size:'1000ml', price:80000 },
+      'palm-latte-1000': { name:'Palm Sugar Latte', size:'1000ml', price:80000 },
+      'chocolate-1000': { name:'Chocolate Butterscotch', size:'1000ml', price:80000 },
+      'spanish-500': { name:'Spanish Latte', size:'500ml', price:35000 },
+      'butterscotch-500': { name:'Butterscotch Latte', size:'500ml', price:40000 },
+      'caramel-500': { name:'Caramel Latte', size:'500ml', price:40000 },
+      'vanilla-500': { name:'Vanilla Latte', size:'500ml', price:40000 },
+      'palm-latte-500': { name:'Palm Sugar Latte', size:'500ml', price:40000 },
+      'chocolate-500': { name:'Chocolate Butterscotch', size:'500ml', price:40000 },
+      'spanish-200': { name:'Spanish Latte', size:'200ml', price:18000 },
+      'butterscotch-200': { name:'Butterscotch Latte', size:'200ml', price:23000 },
+      'caramel-200': { name:'Caramel Latte', size:'200ml', price:23000 },
+      'vanilla-200': { name:'Vanilla Latte', size:'200ml', price:23000 },
+      'palm-latte-200': { name:'Palm Sugar Latte', size:'200ml', price:23000 },
+      'chocolate-200': { name:'Chocolate Butterscotch', size:'200ml', price:23000 },
+    };
+
+    const locationSchedules = {
+      'bintaro': { name:'Bintaro', days:[0,1,2,3,4,5,6] },
+      'kemayoran': { name:'Kemayoran', days:[1,2,3,4,5] },
+      'kembangan': { name:'Kembangan', days:[1,2,3,4,5] },
+      'blok-m': { name:'Blok M', days:[0,6] },
+    };
+
+    // Cart stores entries by a composite key that includes options
+    // key format: <itemId>|sugar=<...>|blend=<...?>
+    let cart = {};
+
+    // Helpers to read options for a row
+    function getOptionsKeyPart(itemId){
+      const container = document.getElementById('opts-' + itemId.replaceAll('/', '-'));
+      if(!container) return '|sugar=Normal';
+      const selects = container.querySelectorAll('select.mini-select');
+      let sugar = 'Normal';
+      let blend = null;
+      selects.forEach(sel=>{
+        if(sel.dataset.opt==='sugar') sugar = sel.value;
+        if(sel.dataset.opt==='blend') blend = sel.value;
+      });
+      return `|sugar=${sugar}` + (blend ? `|blend=${blend}` : '');
+    }
+    function isLatte(itemId){
+      return (menuItems[itemId]?.name || '').includes('Latte');
+    }
+
+    function currentCartKey(itemId){
+      return itemId + getOptionsKeyPart(itemId);
+    }
+
+    function changeQuantity(itemId, change){
+      const key = currentCartKey(itemId);
+      if(!cart[key]) cart[key]=0;
+      cart[key]+=change;
+      if(cart[key] <= 0) delete cart[key];
+      updateDisplay();
+    }
+
+    function updateQuantityDisplays(){
+      // For each base item, show qty for currently selected options
+      Object.keys(menuItems).forEach(id=>{
+        const qtyDisplay = document.getElementById(id + '-qty');
+        if(!qtyDisplay) return;
+        const key = currentCartKey(id);
+        qtyDisplay.textContent = cart[key] || 0;
+      });
+    }
+
+    function updateDisplay(){
+      updateQuantityDisplays();
+
+      const cartEmpty = document.getElementById('cartEmpty');
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+
+      if(Object.keys(cart).length===0){
+        cartEmpty.style.display='block';
+        cartItems.style.display='none';
+        cartTotal.style.display='none';
+      } else {
+        cartEmpty.style.display='none';
+        cartItems.style.display='block';
+        cartTotal.style.display='block';
+        cartItems.innerHTML='';
+
+        Object.keys(cart).forEach(key=>{
+          const [itemId, ...optParts] = key.split('|');
+          const item = menuItems[itemId];
+          const quantity = cart[key];
+          const subtotal = item.price * quantity;
+
+          // human-readable options
+          const opts = optParts.map(p=>p.replace('sugar=','Sugar: ').replace('blend=','Blend: ')).join(' • ');
+
+          const el = document.createElement('div');
+          el.className='cart-item';
+          el.innerHTML = `
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-details">${item.size} • ${opts} × ${quantity}</div>
+            </div>
+            <div class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</div>
+          `;
+          cartItems.appendChild(el);
+        });
+      }
+
+      const total = Object.keys(cart).reduce((sum,key)=>{
+        const itemId = key.split('|')[0];
+        return sum + (menuItems[itemId].price * cart[key]);
+      },0);
+      document.getElementById('totalAmount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+
+      updateCheckoutButton();
+    }
+
+    // Keep quantity displays in sync when user changes selects
+    document.addEventListener('change', (e)=>{
+      if(e.target.classList.contains('mini-select')){
+        updateQuantityDisplays();
+      }
+    });
+
+    function updateDateOptions(){
+      const locationSelect = document.getElementById('locationSelect');
+      const dateSelect = document.getElementById('dateSelect');
+
+      if(!locationSelect.value){
+        dateSelect.disabled = true;
+        dateSelect.value = '';
+        validateSelection();
+        return;
+      }
+      dateSelect.disabled = false;
+
+      const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+      dateSelect.min = tomorrow.toISOString().split('T')[0];
+
+      const maxDate = new Date(); maxDate.setDate(maxDate.getDate()+30);
+      dateSelect.max = maxDate.toISOString().split('T')[0];
+
+      validateSelection();
+    }
+
+    function validateSelection(){
+      const locationSelect = document.getElementById('locationSelect');
+      const dateSelect = document.getElementById('dateSelect');
+      if(!locationSelect.value || !dateSelect.value){ updateCheckoutButton(); return; }
+
+      const selectedLocation = locationSelect.value;
+      const selectedDate = new Date(dateSelect.value);
+      const dayOfWeek = selectedDate.getDay();
+      const schedule = locationSchedules[selectedLocation];
+
+      if(!schedule.days.includes(dayOfWeek)){
+        dateSelect.setCustomValidity('This location is not available on the selected date');
+        dateSelect.reportValidity();
+      } else {
+        dateSelect.setCustomValidity('');
+      }
+      updateCheckoutButton();
+    }
+
+    function updateCheckoutButton(){
+      const locationSelect = document.getElementById('locationSelect');
+      const dateSelect = document.getElementById('dateSelect');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+
+      const hasItems = Object.keys(cart).length>0;
+      const hasLocation = locationSelect.value!=='';
+      const hasDate = dateSelect.value!=='';
+      const isDateValid = dateSelect.checkValidity();
+      checkoutBtn.disabled = !(hasItems && hasLocation && hasDate && isDateValid);
+    }
+
+    function sendToWhatsApp(){
+      const locationSelect = document.getElementById('locationSelect');
+      const dateSelect = document.getElementById('dateSelect');
+      if(Object.keys(cart).length===0 || !locationSelect.value || !dateSelect.value) return;
+
+      const selectedLocation = locationSchedules[locationSelect.value].name;
+      const selectedDate = new Date(dateSelect.value);
+      const formattedDate = selectedDate.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+      let message = "Halo! Saya ingin memesan:\n\n";
+      message += "📋 *DETAIL PESANAN:*\n";
+
+      let total = 0;
+      Object.keys(cart).forEach(key=>{
+        const [itemId, ...opts] = key.split('|');
+        const item = menuItems[itemId];
+        const quantity = cart[key];
+        const subtotal = item.price * quantity;
+        total += subtotal;
+
+        // pretty options
+        const pretty = opts.map(p=>p.replace('sugar=','Sugar: ').replace('blend=','Blend: ')).join(' • ');
+        message += `• ${quantity}x ${item.name} (${item.size}, ${pretty}) - Rp ${subtotal.toLocaleString('id-ID')}\n`;
+      });
+
+      message += `\n💰 *Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
+      message += `📍 *Lokasi:* ${selectedLocation}\n`;
+      message += `📅 *Tanggal:* ${formattedDate}\n\n`;
+      message += "Terima kasih!";
+
+      const whatsappUrl = `https://wa.me/6281287702280?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl,'_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      updateDisplay();
+      updateDateOptions();
+    });
+  </script>
+</body>
+</html>
