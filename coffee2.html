@@ -29,6 +29,7 @@
     .chip-btn.warn{border-color:#f59f00;color:#b46900}
     .tot{display:flex;justify-content:space-between;align-items:center;font-weight:700;border-top:2px solid #e9ecef;padding-top:1rem;margin-top:1rem}
     .checkout{width:100%;margin-top:1rem;padding:1rem;border:none;border-radius:10px;background:#25D366;color:#fff;font-weight:700;cursor:pointer}
+    .checkout:disabled{opacity:.6;cursor:not-allowed}
     .muted{color:#6c757d}
     @media(max-width:768px){.wrap{grid-template-columns:1fr}}
   </style>
@@ -124,6 +125,15 @@
 
       <!-- order options -->
       <h2>Pickup / Delivery</h2>
+
+      <!-- REQUIRED NAME -->
+      <label class="mini" for="custName">Your Name</label>
+      <input id="custName" type="text" x-model="customerName" required
+             placeholder="Enter your name"
+             x-ref="name"
+             style="width:100%;padding:.6rem;border:1px solid #ced4da;border-radius:8px"/>
+      <div style="height:.5rem"></div>
+
       <label class="mini">Location</label>
       <select x-model="location" @change="syncDateRules()">
         <option value="">Select location…</option>
@@ -138,7 +148,9 @@
       <input type="date" x-ref="date" x-model="date" @change="validateDate()"
              style="width:100%;padding:.6rem;border:1px solid #ced4da;border-radius:8px"/>
 
-      <button class="checkout" :disabled="!canCheckout()" @click="whatsapp()">💬 Order via WhatsApp</button>
+      <button class="checkout"
+              :disabled="!canCheckout()"
+              @click="whatsapp()">💬 Order via WhatsApp</button>
 
       <div style="background:#f8f9fa;border-radius:10px;padding:1rem;margin-top:1rem">
         <div class="mini" style="margin-bottom:.5rem">Available Locations</div>
@@ -183,6 +195,7 @@ function tkc(){
     cart: {}, // key: `${id}|s=${sugar}|b=${blend?}`
     location: '',
     date: '',
+    customerName: '',
     schedules: {
       'bintaro':[0,1,2,3,4,5,6],
       'kemayoran':[1,2,3,4,5],
@@ -246,18 +259,41 @@ function tkc(){
       } else { this.$refs.date.setCustomValidity(''); }
       this.$refs.date.reportValidity();
     },
-    canCheckout(){ return Object.keys(this.cart).length && this.location && this.date && this.$refs.date.checkValidity(); },
+
+    // Require: cart has items, name filled, location chosen, valid date
+    canCheckout(){
+      const hasItems = Object.keys(this.cart).length > 0;
+      const hasName = this.customerName && this.customerName.trim().length > 0;
+      const locOk = !!this.location;
+      const dateOk = !!this.date && this.$refs.date.checkValidity();
+      return hasItems && hasName && locOk && dateOk;
+    },
 
     whatsapp(){
-      let msg = "Halo! Saya ingin memesan:\n\n📋 *DETAIL PESANAN:*\n";
+      // Optional: nudge browser to show name field validity if empty
+      if(!this.customerName || !this.customerName.trim()){
+        this.$refs.name.reportValidity?.();
+        return;
+      }
+
+      let msg = "Halo! ";
+      if(this.customerName){
+        msg += `Saya ${this.customerName.trim()} ingin memesan:\n\n📋 *DETAIL PESANAN:*\n`;
+      } else {
+        msg += "Saya ingin memesan:\n\n📋 *DETAIL PESANAN:*\n";
+      }
+
       this.cartList().forEach(e=>{
         const opt = `Sugar: ${e.sugar}${e.blend?` • Blend: ${e.blend}`:''}`;
         msg += `• ${e.qty}x ${e.name} (${e.size}, ${opt}) - ${this.toRp(e.subtotal)}\n`;
       });
+
       const total = this.toRp(this.total());
       const tanggal = new Date(this.date).toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
       const locMap = { 'bintaro':'Bintaro','kemayoran':'Kemayoran','kembangan':'Kembangan','blok-m':'Blok M' };
+
       msg += `\n💰 *Total: ${total}*\n📍 *Lokasi:* ${locMap[this.location]}\n📅 *Tanggal:* ${tanggal}\n\nTerima kasih!`;
+
       window.open(`https://wa.me/6281287702280?text=${encodeURIComponent(msg)}`,'_blank');
     }
   }
