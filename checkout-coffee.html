@@ -428,6 +428,18 @@
 
                     <div class="menu-item">
                         <div class="item-info">
+                            <div class="item-name">Palm Sugar Latte</div>
+                            <div class="item-price">Rp 80.000</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-1000', -1)">−</button>
+                            <span class="quantity-display" id="palm-latte-1000-qty">0</span>
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-1000', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-info">
                             <div class="item-name">Chocolate Butterscotch</div>
                             <div class="item-price">Rp 80.000</div>
                         </div>
@@ -489,6 +501,17 @@
                             <button class="quantity-btn" onclick="changeQuantity('vanilla-500', -1)">−</button>
                             <span class="quantity-display" id="vanilla-500-qty">0</span>
                             <button class="quantity-btn" onclick="changeQuantity('vanilla-500', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Palm Sugar Latte</div>
+                            <div class="item-price">Rp 40.000</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-500', -1)">−</button>
+                            <span class="quantity-display" id="palm-latte-500-qty">0</span>
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-500', 1)">+</button>
                         </div>
                     </div>
 
@@ -555,6 +578,17 @@
                             <button class="quantity-btn" onclick="changeQuantity('vanilla-200', -1)">−</button>
                             <span class="quantity-display" id="vanilla-200-qty">0</span>
                             <button class="quantity-btn" onclick="changeQuantity('vanilla-200', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Palm Sugar Latte</div>
+                            <div class="item-price">Rp 23.000</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-200', -1)">−</button>
+                            <span class="quantity-display" id="palm-latte-200-qty">0</span>
+                            <button class="quantity-btn" onclick="changeQuantity('palm-latte-200', 1)">+</button>
                         </div>
                     </div>
 
@@ -643,6 +677,9 @@
         const menuItems = {
             'spanish-1000': { name: 'Spanish Latte', size: '1000ml', price: 70000 },
             'butterscotch-1000': { name: 'Butterscotch Latte', size: '1000ml', price: 80000 },
+            'palm-latte-500': { name: 'Palm Sugar Latte', size: '500ml', price: 40000 },
+            'palm-latte-1000': { name: 'Palm Sugar Latte', size: '1000ml', price: 80000 },
+            'palm-latte-200': { name: 'Palm Sugar Latte', size: '200ml', price: 23000 },
             'caramel-1000': { name: 'Caramel Latte', size: '1000ml', price: 80000 },
             'vanilla-1000': { name: 'Vanilla Latte', size: '1000ml', price: 80000 },
             'chocolate-1000': { name: 'Chocolate Butterscotch', size: '1000ml', price: 80000 },
