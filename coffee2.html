@@ -22,7 +22,12 @@
     select{width:100%;padding:.5rem;border:1px solid #ced4da;border-radius:8px}
     .qty{display:flex;align-items:center;gap:.6rem}
     .btn{width:34px;height:34px;border:1px solid #dee2e6;background:#fff;border-radius:8px;cursor:pointer;font-weight:700}
-    .tot{display:flex;justify-content:space-between;font-weight:700;border-top:2px solid #e9ecef;padding-top:1rem;margin-top:1rem}
+    .row-actions{display:flex;align-items:center;gap:.4rem}
+    .chip-btn{border:1px solid #dee2e6;background:#fff;border-radius:8px;cursor:pointer;padding:.35rem .55rem;font-size:.85rem}
+    .chip-btn.danger{border-color:#ff6b6b;color:#c92a2a}
+    .chip-btn.primary{border-color:#0ca678;color:#0ca678}
+    .chip-btn.warn{border-color:#f59f00;color:#b46900}
+    .tot{display:flex;justify-content:space-between;align-items:center;font-weight:700;border-top:2px solid #e9ecef;padding-top:1rem;margin-top:1rem}
     .checkout{width:100%;margin-top:1rem;padding:1rem;border:none;border-radius:10px;background:#25D366;color:#fff;font-weight:700;cursor:pointer}
     .muted{color:#6c757d}
     @media(max-width:768px){.wrap{grid-template-columns:1fr}}
@@ -90,12 +95,20 @@
 
     <div x-show="Object.keys(cart).length">
       <template x-for="entry in cartList()" :key="entry.key">
-        <div style="display:flex;justify-content:space-between;border-bottom:1px solid #f1f3f4;padding:.75rem 0">
-          <div>
+        <div style="display:flex;justify-content:space-between;border-bottom:1px solid #f1f3f4;padding:.75rem 0;gap:.75rem">
+          <div style="flex:1">
             <div class="name" x-text="entry.name"></div>
             <div class="muted"
-                 x-text="`${entry.size} • Sugar: ${entry.sugar}${entry.blend ? ' • Blend: ' + entry.blend : ''} × ${entry.qty}`"></div>
+                 x-text="`${entry.size} • Sugar: ${entry.sugar}${entry.blend ? ' • Blend: ' + entry.blend : ''}`"></div>
           </div>
+
+          <div class="row-actions">
+            <button class="chip-btn warn"    @click="dec(entry.key)">−</button>
+            <span style="min-width:2ch;text-align:center" x-text="entry.qty"></span>
+            <button class="chip-btn primary" @click="inc(entry.key)">+</button>
+            <button class="chip-btn danger"  @click="remove(entry.key)">Delete</button>
+          </div>
+
           <div class="price" x-text="toRp(entry.subtotal)"></div>
         </div>
       </template>
@@ -103,6 +116,10 @@
       <div class="tot">
         <span>Total</span>
         <span x-text="toRp(total())"></span>
+      </div>
+
+      <div style="display:flex;gap:.5rem;margin-top:.75rem;align-items:center">
+        <button class="chip-btn danger" @click="clearCart()">Clear All Orders</button>
       </div>
 
       <!-- order options -->
@@ -192,6 +209,22 @@ function tkc(){
       if(!this.cart[k]) this.cart[k] = { key:k, id:it.id, name:it.name, size:it.size, price:it.price, sugar, blend, qty:0 };
       this.cart[k].qty += delta;
       if(this.cart[k].qty <= 0) delete this.cart[k];
+    },
+
+    // --- CART CONTROLS IN CART PANEL ---
+    inc(key){
+      if(this.cart[key]) this.cart[key].qty++;
+    },
+    dec(key){
+      if(!this.cart[key]) return;
+      this.cart[key].qty--;
+      if(this.cart[key].qty <= 0) delete this.cart[key];
+    },
+    remove(key){
+      if(this.cart[key]) delete this.cart[key];
+    },
+    clearCart(){
+      this.cart = {};
     },
 
     cartList(){ return Object.values(this.cart).map(e=>({ ...e, subtotal: e.price*e.qty })); },
