@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tanjung Kitchen Coffee - Order</title>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8f9fa;line-height:1.6}
+    .wrap{max-width:1200px;margin:2rem auto;padding:0 1rem;display:grid;grid-template-columns:1fr 400px;gap:2rem}
+    .card{background:#fff;border:1px solid #e9ecef;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);padding:1.5rem}
+    h1{font-size:2rem;text-align:center;margin-bottom:1rem}
+    h2{font-size:1.1rem;color:#495057;border-bottom:2px solid #e9ecef;padding-bottom:.4rem;margin:1.25rem 0 .75rem}
+    .items{display:flex;flex-direction:column;gap:.75rem}
+    .item{display:flex;gap:1rem;align-items:center;justify-content:space-between;border:1px solid #edf0f2;border-radius:10px;padding:1rem}
+    .name{font-weight:600;color:#212529}
+    .price{font-weight:700;color:#8B4513}
+    .opts{display:grid;grid-template-columns:repeat(2, minmax(120px,1fr));gap:.5rem;margin-top:.35rem}
+    .opts.single{grid-template-columns:1fr}
+    .mini{font-size:.8rem;font-weight:600;color:#495057}
+    select{width:100%;padding:.5rem;border:1px solid #ced4da;border-radius:8px}
+    .qty{display:flex;align-items:center;gap:.6rem}
+    .btn{width:34px;height:34px;border:1px solid #dee2e6;background:#fff;border-radius:8px;cursor:pointer;font-weight:700}
+    .row-actions{display:flex;align-items:center;gap:.4rem}
+    .chip-btn{border:1px solid #dee2e6;background:#fff;border-radius:8px;cursor:pointer;padding:.35rem .55rem;font-size:.85rem}
+    .chip-btn.danger{border-color:#ff6b6b;color:#c92a2a}
+    .chip-btn.primary{border-color:#0ca678;color:#0ca678}
+    .chip-btn.warn{border-color:#f59f00;color:#b46900}
+    .tot{display:flex;justify-content:space-between;align-items:center;font-weight:700;border-top:2px solid #e9ecef;padding-top:1rem;margin-top:1rem}
+    .checkout{width:100%;margin-top:1rem;padding:1rem;border:none;border-radius:10px;background:#25D366;color:#fff;font-weight:700;cursor:pointer}
+    .muted{color:#6c757d}
+    @media(max-width:768px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap" x-data="tkc()">
+  <!-- MENU -->
+  <div class="card">
+    <h1>Coffee Menu</h1>
+
+    <template x-for="group in ['1000ml','500ml','200ml']" :key="group">
+      <section>
+        <h2 x-text="title(group)"></h2>
+        <div class="items">
+          <template x-for="it in menu.filter(m=>m.size===group)" :key="it.id">
+            <div class="item" x-init="initSel(it)">
+              <div style="flex:1">
+                <div class="name" x-text="it.name"></div>
+                <div class="price" x-text="toRp(it.price)"></div>
+
+                <div class="opts" :class="!it.isLatte && 'single'">
+                  <template x-if="it.isLatte">
+                    <div>
+                      <div class="mini">Coffee Blend</div>
+                      <select x-model="sel[it.id].blend">
+                        <option>Signature</option>
+                        <option>Toekoe</option>
+                      </select>
+                    </div>
+                  </template>
+                  <div>
+                    <div class="mini">Sugar Level</div>
+                    <select x-model="sel[it.id].sugar">
+                      <option>Normal</option>
+                      <option>Less</option>
+                      <option>Half</option>
+                      <option>No Sugar</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="qty">
+                <button class="btn"
+                        @click="add(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null, -1)">−</button>
+                <div x-text="qty(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null)"></div>
+                <button class="btn"
+                        @click="add(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null, +1)">+</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </section>
+    </template>
+  </div>
+
+  <!-- CART -->
+  <div class="card">
+    <h2 style="text-align:center;margin-top:.25rem">Your Order</h2>
+
+    <template x-if="Object.keys(cart).length===0">
+      <p class="muted" style="text-align:center;padding:1rem 0">Your cart is empty</p>
+    </template>
+
+    <div x-show="Object.keys(cart).length">
+      <template x-for="entry in cartList()" :key="entry.key">
+        <div style="display:flex;justify-content:space-between;border-bottom:1px solid #f1f3f4;padding:.75rem 0;gap:.75rem">
+          <div style="flex:1">
+            <div class="name" x-text="entry.name"></div>
+            <div class="muted"
+                 x-text="`${entry.size} • Sugar: ${entry.sugar}${entry.blend ? ' • Blend: ' + entry.blend : ''}`"></div>
+          </div>
+
+          <div class="row-actions">
+            <button class="chip-btn warn"    @click="dec(entry.key)">−</button>
+            <span style="min-width:2ch;text-align:center" x-text="entry.qty"></span>
+            <button class="chip-btn primary" @click="inc(entry.key)">+</button>
+            <button class="chip-btn danger"  @click="remove(entry.key)">Delete</button>
+          </div>
+
+          <div class="price" x-text="toRp(entry.subtotal)"></div>
+        </div>
+      </template>
+
+      <div class="tot">
+        <span>Total</span>
+        <span x-text="toRp(total())"></span>
+      </div>
+
+      <div style="display:flex;gap:.5rem;margin-top:.75rem;align-items:center">
+        <button class="chip-btn danger" @click="clearCart()">Clear All Orders</button>
+      </div>
+
+      <!-- order options -->
+      <h2>Pickup / Delivery</h2>
+      <label class="mini">Location</label>
+      <select x-model="location" @change="syncDateRules()">
+        <option value="">Select location…</option>
+        <option value="bintaro">Bintaro (Everyday)</option>
+        <option value="kemayoran">Kemayoran (Weekdays)</option>
+        <option value="kembangan">Kembangan (Weekdays)</option>
+        <option value="blok-m">Blok M (Weekend)</option>
+      </select>
+
+      <div style="height:.5rem"></div>
+      <label class="mini">Preferred Date</label>
+      <input type="date" x-ref="date" x-model="date" @change="validateDate()"
+             style="width:100%;padding:.6rem;border:1px solid #ced4da;border-radius:8px"/>
+
+      <button class="checkout" :disabled="!canCheckout()" @click="whatsapp()">💬 Order via WhatsApp</button>
+
+      <div style="background:#f8f9fa;border-radius:10px;padding:1rem;margin-top:1rem">
+        <div class="mini" style="margin-bottom:.5rem">Available Locations</div>
+        <div class="muted">Bintaro — Everyday</div>
+        <div class="muted">Kemayoran — Weekdays</div>
+        <div class="muted">Kembangan — Weekdays</div>
+        <div class="muted">Blok M — Weekend</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function tkc(){
+  return {
+    // --- DATA ---
+    menu: [
+      // 1000ml
+      {id:'spanish-1000', name:'Spanish Latte', size:'1000ml', price:70000, isLatte:true},
+      {id:'butterscotch-1000', name:'Butterscotch Latte', size:'1000ml', price:80000, isLatte:true},
+      {id:'caramel-1000', name:'Caramel Latte', size:'1000ml', price:80000, isLatte:true},
+      {id:'vanilla-1000', name:'Vanilla Latte', size:'1000ml', price:80000, isLatte:true},
+      {id:'palm-1000', name:'Palm Sugar Latte', size:'1000ml', price:80000, isLatte:true},
+      {id:'choco-1000', name:'Chocolate Butterscotch', size:'1000ml', price:80000, isLatte:false},
+      // 500ml
+      {id:'spanish-500', name:'Spanish Latte', size:'500ml', price:35000, isLatte:true},
+      {id:'butterscotch-500', name:'Butterscotch Latte', size:'500ml', price:40000, isLatte:true},
+      {id:'caramel-500', name:'Caramel Latte', size:'500ml', price:40000, isLatte:true},
+      {id:'vanilla-500', name:'Vanilla Latte', size:'500ml', price:40000, isLatte:true},
+      {id:'palm-500', name:'Palm Sugar Latte', size:'500ml', price:40000, isLatte:true},
+      {id:'choco-500', name:'Chocolate Butterscotch', size:'500ml', price:40000, isLatte:false},
+      // 200ml
+      {id:'spanish-200', name:'Spanish Latte', size:'200ml', price:18000, isLatte:true},
+      {id:'butterscotch-200', name:'Butterscotch Latte', size:'200ml', price:23000, isLatte:true},
+      {id:'caramel-200', name:'Caramel Latte', size:'200ml', price:23000, isLatte:true},
+      {id:'vanilla-200', name:'Vanilla Latte', size:'200ml', price:23000, isLatte:true},
+      {id:'palm-200', name:'Palm Sugar Latte', size:'200ml', price:23000, isLatte:true},
+      {id:'choco-200', name:'Chocolate Butterscotch', size:'200ml', price:23000, isLatte:false},
+    ],
+    // selections per item id
+    sel: {}, // { [id]: { sugar:'Normal', blend:'Signature' } }
+    cart: {}, // key: `${id}|s=${sugar}|b=${blend?}`
+    location: '',
+    date: '',
+    schedules: {
+      'bintaro':[0,1,2,3,4,5,6],
+      'kemayoran':[1,2,3,4,5],
+      'kembangan':[1,2,3,4,5],
+      'blok-m':[0,6],
+    },
+
+    // --- HELPERS ---
+    initSel(it){
+      if(!this.sel[it.id]){
+        this.sel[it.id] = { sugar:'Normal', blend:'Signature' };
+      }
+    },
+    title(size){ return size==='1000ml' ? 'Large (1000ml)' : size==='500ml' ? 'Medium (500ml)' : 'Small (200ml)'; },
+    toRp(n){ return 'Rp ' + n.toLocaleString('id-ID'); },
+    key(it, sugar, blend){ return `${it.id}|s=${sugar}${blend?`|b=${blend}`:''}`; },
+
+    qty(it, sugar, blend){
+      return this.cart[this.key(it,sugar,blend)]?.qty || 0;
+    },
+
+    add(it, sugar, blend, delta){
+      const k = this.key(it,sugar,blend);
+      if(!this.cart[k]) this.cart[k] = { key:k, id:it.id, name:it.name, size:it.size, price:it.price, sugar, blend, qty:0 };
+      this.cart[k].qty += delta;
+      if(this.cart[k].qty <= 0) delete this.cart[k];
+    },
+
+    // --- CART CONTROLS IN CART PANEL ---
+    inc(key){
+      if(this.cart[key]) this.cart[key].qty++;
+    },
+    dec(key){
+      if(!this.cart[key]) return;
+      this.cart[key].qty--;
+      if(this.cart[key].qty <= 0) delete this.cart[key];
+    },
+    remove(key){
+      if(this.cart[key]) delete this.cart[key];
+    },
+    clearCart(){
+      this.cart = {};
+    },
+
+    cartList(){ return Object.values(this.cart).map(e=>({ ...e, subtotal: e.price*e.qty })); },
+    total(){ return this.cartList().reduce((s,e)=>s+e.subtotal,0); },
+
+    // date/location
+    syncDateRules(){
+      const d = new Date(); d.setDate(d.getDate()+1);
+      this.$refs.date.min = d.toISOString().split('T')[0];
+      const max = new Date(); max.setDate(max.getDate()+30);
+      this.$refs.date.max = max.toISOString().split('T')[0];
+      this.validateDate();
+    },
+    validateDate(){
+      if(!this.location || !this.date){ return; }
+      const day = new Date(this.date).getDay();
+      if(!this.schedules[this.location].includes(day)){
+        this.$refs.date.setCustomValidity('This location is not available on the selected date');
+      } else { this.$refs.date.setCustomValidity(''); }
+      this.$refs.date.reportValidity();
+    },
+    canCheckout(){ return Object.keys(this.cart).length && this.location && this.date && this.$refs.date.checkValidity(); },
+
+    whatsapp(){
+      let msg = "Halo! Saya ingin memesan:\n\n📋 *DETAIL PESANAN:*\n";
+      this.cartList().forEach(e=>{
+        const opt = `Sugar: ${e.sugar}${e.blend?` • Blend: ${e.blend}`:''}`;
+        msg += `• ${e.qty}x ${e.name} (${e.size}, ${opt}) - ${this.toRp(e.subtotal)}\n`;
+      });
+      const total = this.toRp(this.total());
+      const tanggal = new Date(this.date).toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+      const locMap = { 'bintaro':'Bintaro','kemayoran':'Kemayoran','kembangan':'Kembangan','blok-m':'Blok M' };
+      msg += `\n💰 *Total: ${total}*\n📍 *Lokasi:* ${locMap[this.location]}\n📅 *Tanggal:* ${tanggal}\n\nTerima kasih!`;
+      window.open(`https://wa.me/6287809902994?text=${encodeURIComponent(msg)}`,'_blank');
+    }
+  }
+}
+</script>
+</body>
+</html>
