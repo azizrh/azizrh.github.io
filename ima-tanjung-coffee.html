@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" x-data="tkc()">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tanjung Coffee - Menu</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?display=swap&family=Epilogue:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="icon" href="data:image/x-icon;base64,"> 
+
+  <!-- Tailwind + Forms plugin -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style type="text/tailwindcss">
+    :root {
+      --primary-color: #38e07b;
+      --secondary-color: #111714;
+      --accent-color: #f0f4f2;
+      --text-primary: #111714;
+      --text-secondary: #648772;
+    }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24 }
+    
+    /* Custom scrollbar for cart */
+    .cart-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .cart-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .cart-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
+
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-screen bg-white text-gray-800" style="font-family: Epilogue, 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
+  <div class="relative flex min-h-screen flex-col">
+    <!-- Header -->
+    <header class="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--accent-color)] bg-white/90 px-4 sm:px-6 lg:px-10 py-3 sm:py-4 backdrop-blur-md">
+      <div class="flex items-center gap-2 sm:gap-3 text-[var(--text-primary)]">
+        <div class="size-7 sm:size-8 text-[var(--primary-color)] flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="currentColor"><path d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"/><path d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"/></svg>
+        </div>
+        <h1 class="text-base sm:text-xl font-extrabold tracking-tight">Tanjung Coffee</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Mobile cart button -->
+        <button 
+          class="lg:hidden relative inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--primary-color)] text-[var(--secondary-color)] hover:opacity-90 transition-opacity"
+          @click="showCart = !showCart">
+          <span class="material-symbols-outlined text-lg">shopping_cart</span>
+          <span 
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold"
+            x-show="Object.keys(cart).length > 0"
+            x-text="cartList().reduce((sum, item) => sum + item.qty, 0)"></span>
+        </button>
+        <button class="hidden sm:inline-flex h-9 sm:h-10 min-w-[70px] sm:min-w-[90px] items-center justify-center rounded-md bg-[var(--accent-color)] px-3 sm:px-4 text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:bg-gray-200 transition-colors">Log in</button>
+        <button class="inline-flex h-9 sm:h-10 items-center justify-center gap-1 sm:gap-2 rounded-md bg-[var(--accent-color)] px-2 sm:px-3 text-xs sm:text-sm font-bold text-[var(--text-primary)] hover:bg-gray-200 transition-colors">
+          <span class="material-symbols-outlined text-base">search</span>
+          <span class="hidden sm:inline">Search</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex flex-1 relative">
+      <!-- MENU -->
+      <section class="flex-1 p-4 sm:p-6 lg:p-10 lg:pr-6">
+        <h2 class="mb-4 sm:mb-6 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">Menu</h2>
+
+        <!-- Size tabs -->
+        <template x-for="group in ['1000ml','500ml','200ml']" :key="group">
+          <div class="mb-8 sm:mb-10">
+            <div class="mb-3 sm:mb-4 flex items-center justify-between">
+              <h3 class="text-lg sm:text-xl font-bold text-[var(--text-primary)]" x-text="title(group)"></h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5">
+              <template x-for="it in menu.filter(m=>m.size===group)" :key="it.id">
+                <article class="rounded-lg sm:rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow duration-300" x-init="initSel(it)">
+                  <div class="flex items-start gap-3 sm:gap-4">
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-base sm:text-lg font-bold text-[var(--text-primary)] truncate" x-text="it.name"></h4>
+                      <p class="mt-1 text-sm font-semibold text-amber-800" x-text="toRp(it.price)"></p>
+
+                      <!-- Options -->
+                      <div class="mt-3 space-y-3" :class="it.isLatte ? 'sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0' : ''">
+                        <template x-if="it.isLatte">
+                          <label class="block">
+                            <span class="text-xs font-semibold text-[var(--text-secondary)]">Coffee Blend</span>
+                            <select class="mt-1 block w-full rounded-md border-gray-300 text-sm" x-model="sel[it.id].blend">
+                              <option>Signature</option>
+                              <option>Toekoe</option>
+                            </select>
+                          </label>
+                        </template>
+                        <label class="block">
+                          <span class="text-xs font-semibold text-[var(--text-secondary)]">Sugar Level</span>
+                          <select class="mt-1 block w-full rounded-md border-gray-300 text-sm" x-model="sel[it.id].sugar">
+                            <option>Normal</option>
+                            <option>Less</option>
+                            <option>Half</option>
+                            <!-- <option>No Sugar</option> -->
+                          </select>
+                        </label>
+                      </div>
+
+                      <!-- Quantity -->
+                      <div class="mt-4 flex items-center justify-between">
+                        <div class="text-xs text-[var(--text-secondary)] min-w-0 flex-1 mr-2" x-show="qty(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null)">
+                          In cart: <span class="font-semibold text-[var(--text-primary)]" x-text="qty(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null)"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <button class="inline-flex size-8 sm:size-9 items-center justify-center rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 text-sm"
+                            @click="add(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null, -1)">−</button>
+                          <div class="min-w-6 text-center font-semibold text-sm" x-text="qty(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null)"></div>
+                          <button class="inline-flex size-8 sm:size-9 items-center justify-center rounded-lg bg-[var(--primary-color)] text-[var(--secondary-color)] font-bold hover:opacity-90"
+                            @click="add(it, sel[it.id].sugar, it.isLatte ? sel[it.id].blend : null, +1)">
+                            <span class="material-symbols-outlined text-base">add_shopping_cart</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </template>
+            </div>
+          </div>
+        </template>
+      </section>
+
+      <!-- CART ASIDE - Desktop -->
+      <aside class="hidden lg:flex w-full max-w-[380px] xl:max-w-[420px] border-l border-gray-200 bg-gray-50 p-6 lg:p-8 flex-col gap-6">
+        <h2 class="text-2xl font-extrabold tracking-tight text-[var(--text-primary)]">Your Order</h2>
+
+        <!-- Empty state -->
+        <template x-if="Object.keys(cart).length===0">
+          <div class="rounded-lg border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500">Your cart is empty</div>
+        </template>
+
+        <!-- Cart list -->
+        <div class="flex-1 space-y-4 overflow-y-auto cart-scroll" x-show="Object.keys(cart).length">
+          <template x-for="entry in cartList()" :key="entry.key">
+            <div class="flex items-start gap-3 border-b border-gray-200 pb-4">
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-[var(--text-primary)] truncate" x-text="entry.name"></p>
+                <p class="text-xs text-[var(--text-secondary)]" x-text="`${entry.size} • Sugar: ${entry.sugar}${entry.blend ? ' • Blend: ' + entry.blend : ''}`"></p>
+                <button class="mt-1 text-xs text-rose-600 hover:underline" @click="remove(entry.key)">Delete</button>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button class="size-7 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" @click="dec(entry.key)">−</button>
+                <span class="min-w-4 text-center text-sm" x-text="entry.qty"></span>
+                <button class="size-7 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" @click="inc(entry.key)">+</button>
+                <span class="ml-2 font-semibold text-[var(--text-primary)] text-sm whitespace-nowrap" x-text="toRp(entry.subtotal)"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Totals & Actions -->
+        <div x-show="Object.keys(cart).length" class="space-y-4">
+          <div class="space-y-2 border-t border-gray-200 pt-4">
+            <div class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+              <span>Subtotal</span>
+              <span class="font-semibold text-[var(--text-primary)]" x-text="toRp(total())"></span>
+            </div>
+            <div class="flex items-center justify-between text-lg font-extrabold text-[var(--text-primary)]">
+              <span>Total</span>
+              <span x-text="toRp(total())"></span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button class="rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" @click="clearCart()">
+              Clear All Orders
+            </button>
+          </div>
+
+          <!-- Pickup / Delivery & details -->
+          <div class="space-y-3">
+            <h3 class="text-lg font-semibold text-[var(--text-primary)]">Order Details</h3>
+
+            <!-- Name (required) -->
+            <label class="block">
+              <span class="text-xs font-semibold text-[var(--text-secondary)]">Your Name <span class="text-rose-600">*</span></span>
+              <input id="custName" x-ref="name" x-model="customerName" type="text" required placeholder="Enter your name (required)" class="mt-1 block w-full rounded-md border-gray-300 text-sm" />
+            </label>
+
+            <!-- Shipment -->
+            <label class="block">
+              <span class="text-xs font-semibold text-[var(--text-secondary)]">Shipment</span>
+              <select x-model="methods" @change="syncDateRules()" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                <option value="">Pickup</option>
+                <option value="delivery">Delivery</option>
+              </select>
+            </label>
+
+            <!-- Location -->
+            <label class="block">
+              <span class="text-xs font-semibold text-[var(--text-secondary)]">Location</span>
+              <select x-model="location" @change="syncDateRules()" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                <option value="">Select location…</option>
+                <option value="bintaro">Bintaro (Everyday)</option>
+                <option value="kemayoran">Kemayoran (Weekdays)</option>
+                <option value="kembangan">Kembangan (Weekdays)</option>
+                <option value="blok-m">Blok M (Weekend)</option>
+              </select>
+            </label>
+
+            <!-- Preferred Date -->
+            <label class="block">
+              <span class="text-xs font-semibold text-[var(--text-secondary)]">Preferred Date</span>
+              <input type="date" x-ref="date" x-model="date" @change="validateDate()" class="mt-1 block w-full rounded-md border-gray-300 text-sm" />
+            </label>
+
+            <div class="rounded-lg bg-white p-3 text-sm text-[var(--text-secondary)]">
+              <p class="mb-1 font-semibold text-[var(--text-primary)]">Available Pickup Locations</p>
+              <ul class="list-disc pl-5 space-y-0.5">
+                <li>Bintaro — Everyday</li>
+                <li>Kemayoran — Weekdays</li>
+                <li>Kembangan — Weekdays</li>
+                <li>Blok M — Weekend</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Checkout button -->
+          <button class="inline-flex w-full items-center justify-center gap-3 rounded-md bg-[#25D366] px-6 py-3 text-base font-bold text-white transition-colors hover:bg-[#1EAE54] disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="!canCheckout()" @click="whatsapp()">
+            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>Order via WhatsApp</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Mobile Cart Overlay -->
+      <div class="lg:hidden fixed inset-0 z-40 transition-all duration-300" 
+           x-show="showCart" 
+           x-transition:enter="ease-out duration-300"
+           x-transition:enter-start="opacity-0"
+           x-transition:enter-end="opacity-100"
+           x-transition:leave="ease-in duration-200"
+           x-transition:leave-start="opacity-100"
+           x-transition:leave-end="opacity-0"
+           style="display: none;">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/50" @click="showCart = false"></div>
+        
+        <!-- Cart Panel -->
+        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-gray-50 flex flex-col"
+             x-transition:enter="ease-out duration-300 transform"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="ease-in duration-200 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full">
+          
+          <!-- Mobile cart header -->
+          <div class="flex items-center justify-between p-1 border-b border-gray-100 bg-white">
+            <h2 class="text-l font-extrabold tracking-tight text-[var(--text-primary)]">Your Order</h2>
+            <button class="p-2 -mr-2 text-gray-500 hover:text-gray-700" @click="showCart = false">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <!-- Mobile cart content -->
+          <div class="flex-1 overflow-hidden flex flex-col">
+            <!-- Empty state -->
+            <template x-if="Object.keys(cart).length===0">
+              <div class="flex-1 flex items-center justify-center p-6">
+                <div class="text-center text-gray-500">
+                  <span class="material-symbols-outlined text-4xl mb-2 block">shopping_cart</span>
+                  <p class="text-sm">Your cart is empty</p>
+                </div>
+              </div>
+            </template>
+
+            <!-- Cart items -->
+            <div class="flex-1 overflow-y-auto cart-scroll p-4 space-y" x-show="Object.keys(cart).length">
+              <template x-for="entry in cartList()" :key="entry.key">
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                  <div class="flex items-start gap-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="font-semibold text-[var(--text-primary)] text-sm" x-text="entry.name"></p>
+                      <p class="text-xs text-[var(--text-secondary)] mt-1" x-text="`${entry.size} • Sugar: ${entry.sugar}${entry.blend ? ' • Blend: ' + entry.blend : ''}`"></p>
+                      <button class="mt-2 text-xs text-rose-600 hover:underline" @click="remove(entry.key)">Delete</button>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                      <div class="flex items-center gap-2 mb-1">
+                        <button class="size-7 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" @click="dec(entry.key)">−</button>
+                        <span class="min-w-4 text-center text-sm font-semibold" x-text="entry.qty"></span>
+                        <button class="size-7 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100" @click="inc(entry.key)">+</button>
+                      </div>
+                      <span class="font-semibold text-[var(--text-primary)] text-sm" x-text="toRp(entry.subtotal)"></span>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <!-- Mobile cart footer -->
+            <div x-show="Object.keys(cart).length" class="border-t border-gray-200 bg-white p-4 space-y">
+              <!-- Total -->
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+                  <span>Subtotal</span>
+                  <span class="font-semibold text-[var(--text-primary)]" x-text="toRp(total())"></span>
+                </div>
+                <div class="flex items-center justify-between text-lg font-extrabold text-[var(--text-primary)]">
+                  <span>Total</span>
+                  <span x-text="toRp(total())"></span>
+                </div>
+              </div>
+
+              <!-- Clear cart -->
+              <button class="w-full rounded-md border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" @click="clearCart()">
+                Clear All Orders
+              </button>
+
+              <!-- Order form -->
+              <div class="space-y-3">
+                <h3 class="text-base font-semibold text-[var(--text-primary)]">Order Details</h3>
+
+                <!-- Name -->
+                <label class="block">
+                  <span class="text-xs font-semibold text-[var(--text-secondary)]">Your Name <span class="text-rose-600">*</span></span>
+                  <input x-ref="nameMobile" x-model="customerName" type="text" required placeholder="Enter your name" class="mt-1 block w-full rounded-md border-gray-300 text-sm" />
+                </label>
+
+                <!-- Shipment -->
+                <label class="block">
+                  <span class="text-xs font-semibold text-[var(--text-secondary)]">Shipment</span>
+                  <select x-model="methods" @change="syncDateRules()" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                    <option value="">Pickup</option>
+                    <option value="delivery">Delivery</option>
+                  </select>
+                </label>
+
+                <!-- Location -->
+                <label class="block">
+                  <span class="text-xs font-semibold text-[var(--text-secondary)]">Location</span>
+                  <select x-model="location" @change="syncDateRules()" class="mt-1 block w-full rounded-md border-gray-300 text-sm">
+                    <option value="">Select location…</option>
+                    <option value="bintaro">Bintaro (Everyday)</option>
+                    <option value="kemayoran">Kemayoran (Weekdays)</option>
+                    <option value="kembangan">Kembangan (Weekdays)</option>
+                    <option value="blok-m">Blok M (Weekend)</option>
+                  </select>
+                </label>
+
+                <!-- Date -->
+                <label class="block">
+                  <span class="text-xs font-semibold text-[var(--text-secondary)]">Preferred Date</span>
+                  <input type="date" x-ref="dateMobile" x-model="date" @change="validateDate()" class="mt-1 block w-full rounded-md border-gray-300 text-sm" />
+                </label>
+
+                <!-- WhatsApp button -->
+                <button class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1EAE54] disabled:cursor-not-allowed disabled:opacity-60"
+                  :disabled="!canCheckout()" @click="whatsapp()">
+                  <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  <span>Order via WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Logic -->
+  <script>
+    function tkc(){
+      return {
+        // --- DATA ---
+        showCart: false, // Mobile cart visibility
+        menu: [
+          // 1000ml
+          {id:'spanish-1000', name:'Spanish Latte', size:'1000ml', price:70000, isLatte:true},
+          {id:'butterscotch-1000', name:'Butterscotch Latte', size:'1000ml', price:80000, isLatte:true},
+          {id:'caramel-1000', name:'Caramel Latte', size:'1000ml', price:80000, isLatte:true},
+          {id:'vanilla-1000', name:'Vanilla Latte', size:'1000ml', price:80000, isLatte:true},
+          {id:'palm-1000', name:'Palm Sugar Latte', size:'1000ml', price:80000, isLatte:true},
+          {id:'choco-1000', name:'Chocolate Butterscotch', size:'1000ml', price:80000, isLatte:false},
+          // 500ml
+          {id:'spanish-500', name:'Spanish Latte', size:'500ml', price:35000, isLatte:true},
+          {id:'butterscotch-500', name:'Butterscotch Latte', size:'500ml', price:40000, isLatte:true},
+          {id:'caramel-500', name:'Caramel Latte', size:'500ml', price:40000, isLatte:true},
+          {id:'vanilla-500', name:'Vanilla Latte', size:'500ml', price:40000, isLatte:true},
+          {id:'palm-500', name:'Palm Sugar Latte', size:'500ml', price:40000, isLatte:true},
+          {id:'choco-500', name:'Chocolate Butterscotch', size:'500ml', price:40000, isLatte:false},
+          // 200ml
+          {id:'spanish-200', name:'Spanish Latte', size:'200ml', price:18000, isLatte:true},
+          {id:'butterscotch-200', name:'Butterscotch Latte', size:'200ml', price:23000, isLatte:true},
+          {id:'caramel-200', name:'Caramel Latte', size:'200ml', price:23000, isLatte:true},
+          {id:'vanilla-200', name:'Vanilla Latte', size:'200ml', price:23000, isLatte:true},
+          {id:'palm-200', name:'Palm Sugar Latte', size:'200ml', price:23000, isLatte:true},
+          {id:'choco-200', name:'Chocolate Butterscotch', size:'200ml', price:23000, isLatte:false},
+        ],
+        sel: {},
+        cart: {},
+        location: '',
+        date: '',
+        customerName: '',
+        methods: '',
+        schedules: {
+          'bintaro':[0,1,2,3,4,5,6],
+          'kemayoran':[1,2,3,4,5],
+          'kembangan':[1,2,3,4,5],
+          'blok-m':[0,6],
+        },
+
+        // --- HELPERS ---
+        initSel(it){
+          if(!this.sel[it.id]){
+            this.sel[it.id] = { sugar:'Normal', blend:'Signature' };
+          }
+        },
+        title(size){ return size==='1000ml' ? 'Large (1000ml)' : size==='500ml' ? 'Medium (500ml)' : 'Small (200ml)'; },
+        toRp(n){ return 'Rp ' + Number(n).toLocaleString('id-ID'); },
+        key(it, sugar, blend){ return `${it.id}|s=${sugar}${blend?`|b=${blend}`:''}`; },
+
+        qty(it, sugar, blend){
+          return this.cart[this.key(it,sugar,blend)]?.qty || 0;
+        },
+
+        add(it, sugar, blend, delta){
+          const k = this.key(it,sugar,blend);
+          if(!this.cart[k]) this.cart[k] = { key:k, id:it.id, name:it.name, size:it.size, price:it.price, sugar, blend, qty:0 };
+          this.cart[k].qty += delta;
+          if(this.cart[k].qty <= 0) delete this.cart[k];
+        },
+
+        // --- CART CONTROLS IN CART PANEL ---
+        inc(key){ if(this.cart[key]) this.cart[key].qty++; },
+        dec(key){ if(!this.cart[key]) return; this.cart[key].qty--; if(this.cart[key].qty <= 0) delete this.cart[key]; },
+        remove(key){ if(this.cart[key]) delete this.cart[key]; },
+        clearCart(){ this.cart = {}; },
+
+        cartList(){ return Object.values(this.cart).map(e=>({ ...e, subtotal: e.price*e.qty })); },
+        total(){ return this.cartList().reduce((s,e)=>s+e.subtotal,0); },
+
+        // date/location
+        syncDateRules(){
+          const d = new Date(); d.setDate(d.getDate()+1);
+          if(this.$refs.date) {
+            this.$refs.date.min = d.toISOString().split('T')[0];
+            const max = new Date(); max.setDate(max.getDate()+30);
+            this.$refs.date.max = max.toISOString().split('T')[0];
+            this.validateDate();
+          }
+          if(this.$refs.dateMobile) {
+            this.$refs.dateMobile.min = d.toISOString().split('T')[0];
+            const max = new Date(); max.setDate(max.getDate()+30);
+            this.$refs.dateMobile.max = max.toISOString().split('T')[0];
+            this.validateDate();
+          }
+        },
+        validateDate(){
+          if(!this.location || !this.date){ return; }
+          const day = new Date(this.date).getDay();
+          const isValid = this.schedules[this.location].includes(day);
+          
+          if(this.$refs.date) {
+            if(!isValid){
+              this.$refs.date.setCustomValidity('This location is not available on the selected date');
+            } else { 
+              this.$refs.date.setCustomValidity(''); 
+            }
+            this.$refs.date.reportValidity();
+          }
+          
+          if(this.$refs.dateMobile) {
+            if(!isValid){
+              this.$refs.dateMobile.setCustomValidity('This location is not available on the selected date');
+            } else { 
+              this.$refs.dateMobile.setCustomValidity(''); 
+            }
+            this.$refs.dateMobile.reportValidity();
+          }
+        },
+
+        // Require: cart has items, name filled, location chosen, valid date
+        canCheckout(){
+          const hasItems = Object.keys(this.cart).length > 0;
+          const hasName = this.customerName && this.customerName.trim().length > 0;
+          const locOk = !!this.location;
+          let dateOk = false;
+          
+          if(this.$refs.date && this.$refs.date.checkValidity) {
+            dateOk = !!this.date && this.$refs.date.checkValidity();
+          } else if(this.$refs.dateMobile && this.$refs.dateMobile.checkValidity) {
+            dateOk = !!this.date && this.$refs.dateMobile.checkValidity();
+          } else {
+            dateOk = !!this.date;
+          }
+          
+          return hasItems && hasName && locOk && dateOk;
+        },
+
+        whatsapp(){
+          // Nudge browser validation for empty name
+          if(!this.customerName || !this.customerName.trim()){
+            if(this.$refs.name) this.$refs.name.reportValidity?.();
+            if(this.$refs.nameMobile) this.$refs.nameMobile.reportValidity?.();
+            return;
+          }
+
+          let msg = "Halo! ";
+          msg += `Saya ${this.customerName.trim()} ingin memesan:\n\n📋 *DETAIL PESANAN:*\n`;
+
+          this.cartList().forEach(e=>{
+            const opt = `Sugar: ${e.sugar}${e.blend?` • Blend: ${e.blend}`:''}`;
+            msg += `• ${e.qty}x ${e.name} (${e.size}, ${opt}) - ${this.toRp(e.subtotal)}\n`;
+          });
+
+          const total = this.toRp(this.total());
+          const tanggal = new Date(this.date).toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+          const locMap = { 'bintaro':'Bintaro','kemayoran':'Kemayoran','kembangan':'Kembangan','blok-m':'Blok M' };
+
+          msg += `\n💰 *Total: ${total}*\n📍 *Lokasi:* ${locMap[this.location]}\n📅 *Tanggal:* ${tanggal}\n\nTerima kasih!`;
+
+          window.open(`https://wa.me/6287809902994?text=${encodeURIComponent(msg)}`,'_blank');
+          
+        }
+      }
+    }
+  </script>
+</body>
+</html>
