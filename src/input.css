@@ -12,11 +12,11 @@
         --accent-dim: rgba(100, 255, 218, 0.1);
 
         /* Coffee Shop Variables */
-        --primary-color: #38e07b;
-        --secondary-color: #111714;
-        --accent-color: #f0f4f2;
-        --text-primary-coffee: #111714;
-        --text-secondary-coffee: #648772;
+        --coffee-primary: #38e07b;
+        --coffee-secondary: #111714;
+        --coffee-accent: #f0f4f2;
+        --coffee-text-primary: #111714;
+        --coffee-text-secondary: #648772;
     }
 
     body {
