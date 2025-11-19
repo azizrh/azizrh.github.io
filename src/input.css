@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --main-bg: #2a2a2a;
+        --secondary-bg: #333333;
+        --text-primary: #ffffff;
+        --text-secondary: #bfbfbf;
+        --accent: #64ffda;
+        --accent-dim: rgba(100, 255, 218, 0.1);
+    }
+    body {
+        font-family: 'Hack', monospace;
+        scroll-behavior: smooth;
+        background-color: var(--main-bg);
+        color: var(--text-primary);
+    }
+}
+
+@layer components {
+    .section-title {
+        @apply relative inline-block pb-2;
+    }
+    .section-title::after {
+        content: '';
+        @apply absolute bottom-0 left-0 w-[60px] h-[3px] rounded-[2px];
+        background: var(--accent);
+    }
+    .job-title {
+        @apply relative inline-block px-2 py-1 rounded transition-all duration-200;
+        background: var(--accent-dim);
+    }
+    .job-title:hover {
+        background: rgba(100, 255, 218, 0.15);
+        @apply translate-x-1;
+    }
+    .achievement-item {
+        @apply relative pl-6 transition-all duration-200;
+    }
+    .achievement-item::before {
+        content: '›';
+        @apply absolute left-0 font-bold;
+        color: var(--accent);
+    }
+    .achievement-item:hover {
+        color: var(--text-primary);
+        @apply translate-x-1;
+    }
+    .skill-pill {
+        background: var(--accent-dim);
+        @apply transition-all duration-300 border border-transparent;
+    }
+    .skill-pill:hover {
+        border-color: var(--accent);
+        @apply -translate-y-0.5 shadow-lg;
+        box-shadow: 0 4px 12px rgba(100, 255, 218, 0.1);
+    }
+    .tooltip {
+        @apply invisible absolute z-50 bg-[#333333] text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 transition-all duration-200 ease-out translate-y-2;
+    }
+    .tooltip::before {
+        content: '';
+        @apply absolute -top-1 left-1/2 -translate-x-1/2 border-0 border-b-4 border-l-4 border-r-4 border-solid border-transparent border-b-[#333333];
+    }
+    .tooltip-trigger:hover .tooltip {
+        @apply visible opacity-100 translate-y-1;
+    }
+    .nav-link {
+        @apply relative text-[#bfbfbf] transition-colors duration-200;
+    }
+    .nav-link:hover {
+        @apply text-white;
+    }
+    .nav-link::after {
+        content: '';
+        @apply absolute w-0 h-[2px] -bottom-1 left-0 transition-all duration-200;
+        background-color: var(--accent);
+    }
+    .nav-link:hover::after {
+        @apply w-full;
+    }
+    .contact-link {
+        @apply transition-all duration-200;
+    }
+    .contact-link:hover {
+        color: var(--accent);
+        @apply -translate-y-0.5;
+    }
+    .education-highlight {
+        @apply border-l-[3px] pl-4 transition-all duration-200;
+        border-color: var(--accent);
+    }
+    .education-highlight:hover {
+        background: var(--accent-dim);
+        @apply translate-x-1;
+    }
+}
