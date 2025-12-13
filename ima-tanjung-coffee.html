@@ -239,6 +239,7 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 text-sm">
                                 <option value="">Select location…</option>
                                 <option value="bintaro">Bintaro (Everyday)</option>
+                                <option value="bsd">BSD (Everyday)</option>
                                 <option value="kemayoran">Kemayoran (Weekdays)</option>
                                 <option value="kembangan">Kembangan (Weekdays)</option>
                                 <option value="blok-m">Blok M (Weekend)</option>
@@ -256,6 +257,7 @@
                             <p class="mb-1 font-semibold text-[var(--coffee-text-primary)]">Available Pickup Locations</p>
                             <ul class="list-disc pl-5 space-y-0.5">
                                 <li>Bintaro — Everyday</li>
+                                <li>BSD — Everyday</li>
                                 <li>Kemayoran — Weekdays</li>
                                 <li>Kembangan — Weekdays</li>
                                 <li>Blok M — Weekend</li>
@@ -397,6 +399,7 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 text-sm">
                                         <option value="">Select location…</option>
                                         <option value="bintaro">Bintaro (Everyday)</option>
+                                        <option value="bsd">BSD (Everyday)</option>
                                         <option value="kemayoran">Kemayoran (Weekdays)</option>
                                         <option value="kembangan">Kembangan (Weekdays)</option>
                                         <option value="blok-m">Blok M (Weekend)</option>
@@ -438,27 +441,38 @@
                 // --- DATA ---
                 showCart: false, // Mobile cart visibility
                 menu: [
-                    // 1000ml
+                    // 1000ml (L)
                     { id: 'spanish-1000', name: 'Spanish Latte', size: '1000ml', price: 70000, isLatte: true },
                     { id: 'butterscotch-1000', name: 'Butterscotch Latte', size: '1000ml', price: 80000, isLatte: true },
                     { id: 'caramel-1000', name: 'Caramel Latte', size: '1000ml', price: 80000, isLatte: true },
                     { id: 'vanilla-1000', name: 'Vanilla Latte', size: '1000ml', price: 80000, isLatte: true },
                     { id: 'palm-1000', name: 'Palm Sugar Latte', size: '1000ml', price: 80000, isLatte: true },
+                    { id: 'dirty-matcha-1000', name: 'Dirty Matcha Latte', size: '1000ml', price: 85000, isLatte: true },
                     { id: 'choco-1000', name: 'Chocolate Butterscotch', size: '1000ml', price: 80000, isLatte: false },
-                    // 500ml
+                    { id: 'palm-milk-1000', name: 'Palm Sugar Milk', size: '1000ml', price: 80000, isLatte: false },
+                    { id: 'matcha-1000', name: 'Matcha', size: '1000ml', price: 85000, isLatte: false },
+                    
+                    // 500ml (M)
                     { id: 'spanish-500', name: 'Spanish Latte', size: '500ml', price: 35000, isLatte: true },
                     { id: 'butterscotch-500', name: 'Butterscotch Latte', size: '500ml', price: 40000, isLatte: true },
                     { id: 'caramel-500', name: 'Caramel Latte', size: '500ml', price: 40000, isLatte: true },
                     { id: 'vanilla-500', name: 'Vanilla Latte', size: '500ml', price: 40000, isLatte: true },
                     { id: 'palm-500', name: 'Palm Sugar Latte', size: '500ml', price: 40000, isLatte: true },
+                    { id: 'dirty-matcha-500', name: 'Dirty Matcha Latte', size: '500ml', price: 43000, isLatte: true },
                     { id: 'choco-500', name: 'Chocolate Butterscotch', size: '500ml', price: 40000, isLatte: false },
-                    // 200ml
+                    { id: 'palm-milk-500', name: 'Palm Sugar Milk', size: '500ml', price: 40000, isLatte: false },
+                    { id: 'matcha-500', name: 'Matcha', size: '500ml', price: 43000, isLatte: false },
+                    
+                    // 200ml (S)
                     { id: 'spanish-200', name: 'Spanish Latte', size: '200ml', price: 18000, isLatte: true },
                     { id: 'butterscotch-200', name: 'Butterscotch Latte', size: '200ml', price: 23000, isLatte: true },
                     { id: 'caramel-200', name: 'Caramel Latte', size: '200ml', price: 23000, isLatte: true },
                     { id: 'vanilla-200', name: 'Vanilla Latte', size: '200ml', price: 23000, isLatte: true },
                     { id: 'palm-200', name: 'Palm Sugar Latte', size: '200ml', price: 23000, isLatte: true },
+                    { id: 'dirty-matcha-200', name: 'Dirty Matcha Latte', size: '200ml', price: 25000, isLatte: true },
                     { id: 'choco-200', name: 'Chocolate Butterscotch', size: '200ml', price: 23000, isLatte: false },
+                    { id: 'palm-milk-200', name: 'Palm Sugar Milk', size: '200ml', price: 23000, isLatte: false },
+                    { id: 'matcha-200', name: 'Matcha', size: '200ml', price: 25000, isLatte: false },
                 ],
                 sel: {},
                 cart: {},
@@ -467,10 +481,11 @@
                 customerName: '',
                 methods: '',
                 schedules: {
-                    'bintaro': [0, 1, 2, 3, 4, 5, 6],
-                    'kemayoran': [0, 1, 2, 3, 4, 5, 6],
-                    'kembangan': [0, 1, 2, 3, 4, 5, 6],
-                    'blok-m': [0, 1, 2, 3, 4, 5, 6],
+                    'bintaro': [0, 1, 2, 3, 4, 5, 6],      // Everyday
+                    'bsd': [0, 1, 2, 3, 4, 5, 6],          // Everyday
+                    'kemayoran': [1, 2, 3, 4, 5],          // Weekdays (Mon-Fri)
+                    'kembangan': [1, 2, 3, 4, 5],          // Weekdays (Mon-Fri)
+                    'blok-m': [0, 6],                      // Weekend (Sat-Sun)
                 },
 
                 // --- HELPERS ---
@@ -579,7 +594,13 @@
 
                     const total = this.toRp(this.total());
                     const tanggal = new Date(this.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    const locMap = { 'bintaro': 'Bintaro', 'kemayoran': 'Kemayoran', 'kembangan': 'Kembangan', 'blok-m': 'Blok M' };
+                    const locMap = { 
+                        'bintaro': 'Bintaro', 
+                        'bsd': 'BSD',
+                        'kemayoran': 'Kemayoran', 
+                        'kembangan': 'Kembangan', 
+                        'blok-m': 'Blok M' 
+                    };
 
                     // 🔑 Normalize methods value
                     const shipment = this.methods === 'delivery' ? 'Delivery' : 'Pickup';
