@@ -17,6 +17,9 @@
     <!-- Tailwind Built CSS -->
     <link href="./dist/output.css" rel="stylesheet">
 
+    <!-- QR code generator (for dynamic QRIS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -276,6 +279,13 @@
                         </svg>
                         <span>Order via WhatsApp</span>
                     </button>
+                    <!-- QRIS button -->
+                    <button
+                        class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-[var(--coffee-primary)] bg-white px-6 py-3 text-base font-bold text-[var(--coffee-primary)] transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        :disabled="!canCheckout()" @click="openQris()">
+                        <span class="material-symbols-outlined text-2xl">qr_code_2</span>
+                        <span>Pay with QRIS</span>
+                    </button>
                 </div>
             </aside>
 
@@ -426,12 +436,59 @@
                                     </svg>
                                     <span>Order via WhatsApp</span>
                                 </button>
+                                <!-- QRIS button -->
+                                <button
+                                    class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md border-2 border-[var(--coffee-primary)] bg-white px-4 py-3 text-sm font-bold text-[var(--coffee-primary)] transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                    :disabled="!canCheckout()" @click="openQris()">
+                                    <span class="material-symbols-outlined text-xl">qr_code_2</span>
+                                    <span>Pay with QRIS</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
+
+        <!-- QRIS Payment Modal -->
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" x-show="showQris"
+            x-transition.opacity style="display: none;" @keydown.escape.window="showQris = false">
+            <div class="absolute inset-0 bg-black/60" @click="showQris = false"></div>
+            <div class="relative w-full max-w-sm max-h-full overflow-y-auto rounded-xl bg-white p-5 shadow-xl text-center">
+                <button class="absolute right-3 top-3 p-1 text-gray-500 hover:text-gray-700" @click="showQris = false"
+                    aria-label="Close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--coffee-text-secondary)]">QRIS Payment</p>
+                <h3 class="mt-1 text-base font-bold text-[var(--coffee-text-primary)]" x-text="qris.merchant"></h3>
+                <p class="mt-2 text-2xl font-extrabold text-amber-800" x-text="toRp(total())"></p>
+
+                <div class="mx-auto mt-4 w-full max-w-[280px] rounded-lg border border-gray-200 bg-white p-2">
+                    <canvas x-ref="qrisCanvas" class="block h-auto w-full"></canvas>
+                </div>
+                <p class="mt-2 text-xs text-red-600" x-show="qrisError" x-text="qrisError"></p>
+
+                <p class="mt-3 text-xs text-[var(--coffee-text-secondary)]">
+                    Scan with GoPay, OVO, DANA, ShopeePay or any mobile banking app. The amount is filled in
+                    automatically. Please check it before paying.
+                </p>
+
+                <button
+                    class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                    @click="downloadQris()">
+                    <span class="material-symbols-outlined text-lg">download</span>
+                    <span>Save QR Image</span>
+                </button>
+                <button
+                    class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1EAE54]"
+                    @click="whatsapp('qris')">
+                    <span>I've paid — Send order via WhatsApp</span>
+                </button>
+                <p class="mt-2 text-[11px] text-[var(--coffee-text-secondary)]">
+                    Please attach a screenshot of your payment proof in the WhatsApp chat.
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- Logic -->
@@ -440,6 +497,13 @@
             return {
                 // --- DATA ---
                 showCart: false, // Mobile cart visibility
+                showQris: false, // QRIS payment modal visibility
+                qrisError: '',
+                qris: {
+                    merchant: 'Tanjung Kitchen & Coffee',
+                    // Static QRIS payload (GoPay Merchant, NMID ID1026600156925)
+                    payload: '00020101021126610014COM.GO-JEK.WWW01189360091438348207380210G8348207380303UMI51440014ID.CO.QRIS.WWW0215ID10266001569250303UMI5204581253033605802ID5925Tanjung Kitchen & Coffee,6007TANGSEL61051522462070703A016304B8B6',
+                },
                 menu: [
                     // 1000ml
                     { id: 'americano-1000', name: 'Americano', size: '1000ml', price: 48000, isLatte: true },
@@ -577,7 +641,71 @@
                     return hasItems && hasName && locOk && dateOk;
                 },
 
-                whatsapp() {
+                // --- QRIS ---
+                crc16(str) {
+                    // CRC-16/CCITT-FALSE, as required by EMVCo / QRIS
+                    let crc = 0xFFFF;
+                    for (let i = 0; i < str.length; i++) {
+                        crc ^= str.charCodeAt(i) << 8;
+                        for (let j = 0; j < 8; j++) {
+                            crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+                            crc &= 0xFFFF;
+                        }
+                    }
+                    return crc.toString(16).toUpperCase().padStart(4, '0');
+                },
+                // Turn the static QRIS into a dynamic one carrying the order amount
+                dynamicQris(amount) {
+                    const src = this.qris.payload;
+                    const tags = [];
+                    for (let i = 0; i < src.length;) {
+                        const id = src.substr(i, 2);
+                        const len = parseInt(src.substr(i + 2, 2), 10);
+                        tags.push([id, src.substr(i + 4, len)]);
+                        i += 4 + len;
+                    }
+                    const fields = tags.filter(([id]) => id !== '54' && id !== '63')
+                        .map(([id, v]) => id === '01' ? [id, '12'] : [id, v]); // 12 = dynamic
+                    fields.push(['54', String(Math.round(amount))]);
+                    fields.sort((a, b) => a[0].localeCompare(b[0]));
+                    const body = fields.map(([id, v]) => id + String(v.length).padStart(2, '0') + v).join('') + '6304';
+                    return body + this.crc16(body);
+                },
+                openQris() {
+                    if (!this.canCheckout()) return;
+                    this.showQris = true;
+                    this.$nextTick(() => this.drawQris());
+                },
+                drawQris() {
+                    this.qrisError = '';
+                    const canvas = this.$refs.qrisCanvas;
+                    try {
+                        const qr = qrcode(0, 'M');
+                        qr.addData(this.dynamicQris(this.total()));
+                        qr.make();
+                        const n = qr.getModuleCount(), margin = 4, cell = 8;
+                        const size = (n + margin * 2) * cell;
+                        canvas.width = canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(0, 0, size, size);
+                        ctx.fillStyle = '#000';
+                        for (let r = 0; r < n; r++)
+                            for (let c = 0; c < n; c++)
+                                if (qr.isDark(r, c)) ctx.fillRect((c + margin) * cell, (r + margin) * cell, cell, cell);
+                    } catch (e) {
+                        console.error(e);
+                        this.qrisError = 'Failed to generate the QR code. Please order via WhatsApp instead.';
+                    }
+                },
+                downloadQris() {
+                    const a = document.createElement('a');
+                    a.href = this.$refs.qrisCanvas.toDataURL('image/png');
+                    a.download = `QRIS-TanjungCoffee-${this.total()}.png`;
+                    a.click();
+                },
+
+                whatsapp(payment) {
                     // Nudge browser validation for empty name
                     if (!this.customerName || !this.customerName.trim()) {
                         if (this.$refs.name) this.$refs.name.reportValidity?.();
@@ -603,7 +731,9 @@
                     msg += `\n💰 *Total:* ${total}`;
                     msg += `\n🚚 *Metode:* ${shipment}`;
                     msg += `\n📍 *Lokasi:* ${locMap[this.location]}`;
-                    msg += `\n📅 *Tanggal:* ${tanggal}\n\nTerima kasih!`;
+                    msg += `\n📅 *Tanggal:* ${tanggal}`;
+                    if (payment === 'qris') msg += `\n💳 *Pembayaran:* QRIS (sudah dibayar, bukti terlampir)`;
+                    msg += `\n\nTerima kasih!`;
 
                     console.log(msg);
                     window.open(`https://wa.me/6281287702280?text=${encodeURIComponent(msg)}`, '_blank');
